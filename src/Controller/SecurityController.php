@@ -2,16 +2,54 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
+use App\Repository\UserRepository;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 
 #[Route('/api', name: 'api_')]
 class SecurityController extends AbstractController
 {
-    #[Route('/login', name: 'login')]
-    public function index(): Response
+    private UserRepository $userRepository;
+
+    public function __construct(UserRepository $userRepository)
     {
-        return $this->json(["message"=>"OK"]);
+        $this->userRepository = $userRepository;
+    }
+
+    #[Route('/register', name: 'register')]
+    public function registration(Request $request, UserPasswordHasherInterface $passwordHasher): Response
+    {
+        $email = $request->toArray()["email"] ?? null;
+        $password = $request->toArray()["password"] ?? null;
+
+        if (!$email) {
+            throw new BadRequestHttpException("L'email n'est pas renseigné");
+        }
+        if (!$password) {
+            throw new BadRequestHttpException("Le mot de passe n'est pas renseigné");
+        }
+
+        $alreadyRegisted = $this->userRepository->findOneBy(["email" => $email]);
+
+        if ($alreadyRegisted) {
+            throw new BadRequestHttpException("Cette email est déjà utilisé");
+        }
+
+        $user = new User();
+        $user->setEmail($email);
+        $hashedPassword = $passwordHasher->hashPassword(
+            $user,
+            $password
+        );
+        $user->setPassword($hashedPassword);
+        $this->userRepository->save($user, true);
+
+        return $this->json($user, 201);
     }
 }
