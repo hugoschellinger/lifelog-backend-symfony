@@ -27,12 +27,20 @@ class SecurityController extends AbstractController
     {
         $email = $request->toArray()["email"] ?? null;
         $password = $request->toArray()["password"] ?? null;
+        $firstname = $request->toArray()["firstname"] ?? null;
+        $lastname = $request->toArray()["lastname"] ?? null;
 
         if (!$email) {
             throw new BadRequestHttpException("L'email n'est pas renseigné");
         }
         if (!$password) {
             throw new BadRequestHttpException("Le mot de passe n'est pas renseigné");
+        }
+        if (!$firstname) {
+            throw new BadRequestHttpException("Le prénom n'est pas renseigné");
+        }
+        if (!$lastname) {
+            throw new BadRequestHttpException("Le nom n'est pas renseigné");
         }
 
         $alreadyRegisted = $this->userRepository->findOneBy(["email" => $email]);
@@ -48,6 +56,8 @@ class SecurityController extends AbstractController
             $password
         );
         $user->setPassword($hashedPassword);
+        $user->setFirstname($firstname);
+        $user->setLastname($lastname);
         $this->userRepository->save($user, true);
 
         return $this->json($user, 201);
