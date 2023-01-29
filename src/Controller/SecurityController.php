@@ -5,33 +5,24 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\MailService;
+use EmailType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Mailer\MailerInterface;
-use Symfony\Component\Mime\Email;
 
 #[Route('/api', name: 'api_')]
 class SecurityController extends AbstractController
 {
     private UserRepository $userRepository;
+    private MailService $mailService;
 
-    public function __construct(UserRepository $userRepository)
+    public function __construct(UserRepository $userRepository, MailService $mailService)
     {
         $this->userRepository = $userRepository;
-    }
-
-    #[Route('/mail', name: 'mail')]
-    public function mail(MailService $mailService): Response
-    {
-
-        $mailService->send("hschellinger@hotmail.fr","hugo.schellinger@gmail.com","Heyy","test",[]);
-
-        return $this->json(["message"=>"OK"],200);
+        $this->mailService = $mailService;
     }
 
     #[Route('/register', name: 'register',methods:["POST"])]
@@ -71,6 +62,7 @@ class SecurityController extends AbstractController
         $user->setFirstname($firstname);
         $user->setLastname($lastname);
         $this->userRepository->save($user, true);
+
 
         return $this->json($user, 201);
     }

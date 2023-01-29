@@ -22,6 +22,11 @@ class Exception
     #[ORM\Column]
     private ?\DateTimeImmutable $throwableAt = null;
 
+    public function __construct()
+    {
+        $this->throwableAt=new \DateTimeImmutable();
+    }
+
     public function getId(): ?int
     {
         return $this->id;
