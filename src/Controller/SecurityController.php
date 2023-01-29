@@ -61,7 +61,11 @@ class SecurityController extends AbstractController
         $user->setPassword($hashedPassword);
         $user->setFirstname($firstname);
         $user->setLastname($lastname);
+        
+        $this->mailService->send(EmailType::REGISTRATION ,$user);
+
         $this->userRepository->save($user, true);
+
 
 
         return $this->json($user, 201);

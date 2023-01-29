@@ -4,6 +4,7 @@ namespace App\Service;
 
 use App\Entity\Mail;
 use App\Entity\User;
+use App\Repository\MailRepository;
 use EmailType;
 use Symfony\Bridge\Twig\Mime\TemplatedEmail;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
@@ -15,16 +16,17 @@ class MailService extends AbstractService
 {
     private $MAIL_SENDER = "no-reply@initAPI.fr";
     private $MAIL_TYPE_INFO = [
-        EmailType::FORGOT_PASSWORD => ["subject"=> "Mot de passe oublié","template"=>"forgotPassword"],
-        EmailType::VERIFICATION_EMAIL => ["subject"=> "Vérification de l'adresse mail","template"=>"verificationEmail"],
-        EmailType::REGISTRATION => ["subject"=> "Bienvenu","template"=>"registration"],
+        "FORGOT_PASSWORD" => ["subject"=> "Mot de passe oublié","template"=>"forgotPassword"],
+        "VERIFICATION_EMAIL" => ["subject"=> "Vérification de l'adresse mail","template"=>"verificationEmail"],
+        "REGISTRATION" => ["subject"=> "Bienvenu","template"=>"registration"],
     ];
 
     private MailerInterface $mailer;
 
 
-    public function __construct(MailerInterface $mailer,)
+    public function __construct(MailerInterface $mailer,MailRepository $mailRepository)
     {
+        parent::__construct($mailRepository);
         $this->mailer = $mailer;
     }
 
@@ -38,21 +40,17 @@ class MailService extends AbstractService
             ->setType($type)
             ->setReceipter($user->getEmail());
 
-        $this->sendMail($mail, $subject, $template, compact($user));
+        $this->sendMail($mail, $subject, $template, ["user"=>$user]);
     }
 
-    /**
-     * saved Email
-     */
-    public function send(EmailType $type, User $user): void
+
+    public function send(string $type, User $user): void
     {
-        dump($type);
         $mail = (new Mail())
-            ->setType($type::class)
+            ->setType($type)
             ->setReceipter($user->getEmail());
 
-
-        $this->sendMail($mail, $this->MAIL_TYPE_INFO[$type]["subject"], $this->MAIL_TYPE_INFO[$type::class]["template"], compact($user));
+        $this->sendMail($mail, $this->MAIL_TYPE_INFO[$type]["subject"], $this->MAIL_TYPE_INFO[$type]["template"], ["user"=>$user]);
     }
 
     private function sendMail(Mail $mail, string $subject, string $template, array $context)
@@ -68,8 +66,9 @@ class MailService extends AbstractService
             $this->mailer->send($email);
         } catch (TransportExceptionInterface $e) {
             $mail->setIsSended(false);
-            throw new ServiceUnavailableHttpException("L'envoi du mail a échoué");
+            throw new ServiceUnavailableHttpException(null,"L'envoi du mail a échoué");
+        }finally{
+            $this->save($mail);
         }
-        $this->save($mail);
     }
 }

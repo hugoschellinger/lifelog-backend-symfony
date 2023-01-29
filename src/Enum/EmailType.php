@@ -1,7 +1,7 @@
 <?php
 
-enum EmailType {
-    case VERIFICATION_EMAIL;
-    case FORGOT_PASSWORD;
-    case REGISTRATION;
+interface EmailType {
+    const VERIFICATION_EMAIL="VERIFICATION_EMAIL";
+    const FORGOT_PASSWORD="FORGOT_PASSWORD";
+    const REGISTRATION="REGISTRATION";
 }
