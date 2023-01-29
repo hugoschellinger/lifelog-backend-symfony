@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Repository\UserRepository;
+use App\Service\MailService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,18 +26,10 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/mail', name: 'mail')]
-    public function mail(MailerInterface $mailer): Response
+    public function mail(MailService $mailService): Response
     {
-        $email = (new Email())
-        // email address as a simple string
-        ->from('hschellinger@hotmail.fr')
-        ->html('<p>Lorem ipsum...</p>')
-        ->to('hugo.schellinger@gmail.com')
-        ->subject('Time for Symfony Mailer!')
-        ->text('Sending emails is fun again!')
-        ->html('<p>See Twig integration for better HTML integration!</p>');
 
-        $mailer->send($email);
+        $mailService->send("hschellinger@hotmail.fr","hugo.schellinger@gmail.com","Heyy","test",[]);
 
         return $this->json(["message"=>"OK"],200);
     }
