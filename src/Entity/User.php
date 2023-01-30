@@ -38,6 +38,15 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\JoinColumn(nullable: true)]
     private ?\DateTimeImmutable $lastConnexion = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $verificationToken = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $passwordToken = null;
+
+    #[ORM\Column(nullable: true)]
+    private ?\DateTimeImmutable $resetAt = null;
+
     public function __construct()
     {
         $this->lastConnexion=new DateTimeImmutable();
@@ -145,6 +154,42 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setLastConnexion(\DateTimeImmutable $lastConnexion): self
     {
         $this->lastConnexion = $lastConnexion;
+
+        return $this;
+    }
+
+    public function getVerificationToken(): ?string
+    {
+        return $this->verificationToken;
+    }
+
+    public function setVerificationToken(?string $verificationToken): self
+    {
+        $this->verificationToken = $verificationToken;
+
+        return $this;
+    }
+
+    public function getPasswordToken(): ?string
+    {
+        return $this->passwordToken;
+    }
+
+    public function setPasswordToken(?string $passwordToken): self
+    {
+        $this->passwordToken = $passwordToken;
+
+        return $this;
+    }
+
+    public function getResetAt(): ?\DateTimeImmutable
+    {
+        return $this->resetAt;
+    }
+
+    public function setResetAt(?\DateTimeImmutable $resetAt): self
+    {
+        $this->resetAt = $resetAt;
 
         return $this;
     }

@@ -5,6 +5,8 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Repository\UserRepository;
 use App\Service\MailService;
+use App\Service\UserService;
+use DateTimeImmutable;
 use EmailType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,17 +14,23 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/api', name: 'api_')]
 class SecurityController extends AbstractController
 {
-    private UserRepository $userRepository;
+    private UserService $userService;
     private MailService $mailService;
+    private TranslatorInterface $translator;
+    private TokenGeneratorInterface $tokenGenerator;
 
-    public function __construct(UserRepository $userRepository, MailService $mailService)
+    public function __construct(UserService $userService, MailService $mailService,TranslatorInterface $translator,TokenGeneratorInterface $tokenGenerator)
     {
-        $this->userRepository = $userRepository;
+        $this->userService = $userService;
         $this->mailService = $mailService;
+        $this->translator = $translator;
+        $this->tokenGenerator = $tokenGenerator;
     }
 
     #[Route('/register', name: 'register',methods:["POST"])]
@@ -34,22 +42,22 @@ class SecurityController extends AbstractController
         $lastname = $request->toArray()["lastname"] ?? null;
 
         if (!$email) {
-            throw new BadRequestHttpException("L'email n'est pas renseigné");
+            throw new BadRequestHttpException($this->translator->trans("Email is empty"));
         }
         if (!$password) {
-            throw new BadRequestHttpException("Le mot de passe n'est pas renseigné");
+            throw new BadRequestHttpException($this->translator->trans("Password is empty"));
         }
         if (!$firstname) {
-            throw new BadRequestHttpException("Le prénom n'est pas renseigné");
+            throw new BadRequestHttpException($this->translator->trans("Firstname is empty"));
         }
         if (!$lastname) {
-            throw new BadRequestHttpException("Le nom n'est pas renseigné");
+            throw new BadRequestHttpException($this->translator->trans("Lastname is empty"));
         }
 
-        $alreadyRegisted = $this->userRepository->findOneBy(["email" => $email]);
+        $alreadyRegisted = $this->userService->findOneBy(["email" => $email]);
 
         if ($alreadyRegisted) {
-            throw new BadRequestHttpException("Cette email est déjà utilisé");
+            throw new BadRequestHttpException($this->translator->trans("Email already used"));
         }
 
         $user = new User();
@@ -64,10 +72,32 @@ class SecurityController extends AbstractController
         
         $this->mailService->send(EmailType::REGISTRATION ,$user);
 
-        $this->userRepository->save($user, true);
+        $this->userService->save($user, true);
 
 
 
         return $this->json($user, 201);
+    }
+
+    #[Route('/resetPassword', name: 'reset_password',methods:["POST"])]
+    public function resetPassword(Request $request): Response
+    {
+        $email=$request->toArray()["email"] ?? null;
+
+        if(!$email){
+            throw new BadRequestHttpException($this->translator->trans("Email is empty"));
+        }
+
+        $user=$this->userService->findOneBy(["email"=>$email]);
+
+        if($user){
+            $user->setPasswordToken($this->tokenGenerator->generateToken());
+            $user->setResetAt(new DateTimeImmutable());
+
+            $this->userService->save($user);
+            $this->mailService->send(EmailType::FORGOT_PASSWORD,$user);
+        }
+
+        return $this->json(["message"=>"OK"],204);
     }
 }

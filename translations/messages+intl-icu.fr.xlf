@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
+  <file source-language="en" target-language="fr" datatype="plaintext" original="file.ext">
+    <header>
+      <tool tool-id="symfony" tool-name="Symfony"/>
+    </header>
+    <body>
+      <trans-unit id="jp9pnaz" resname="Email is empty">
+        <source>Email is empty</source>
+        <target>L'email n'est pas renseigné</target>
+      </trans-unit>
+      <trans-unit id="yQqXftK" resname="Password is empty">
+        <source>Password is empty</source>
+        <target>Le mot de passe n'est pas renseigné</target>
+      </trans-unit>
+      <trans-unit id="zaqVUa." resname="Firstname is empty">
+        <source>Firstname is empty</source>
+        <target>le prénom n'est pas renseigné</target>
+      </trans-unit>
+      <trans-unit id="whP5eap" resname="Lastname is empty">
+        <source>Lastname is empty</source>
+        <target>Le nom n'est pas renseigné</target>
+      </trans-unit>
+      <trans-unit id="4z7FOpH" resname="Email already used">
+        <source>Email already used</source>
+        <target>L'email est déjà utilisé</target>
+      </trans-unit>
+    </body>
+  </file>
+</xliff>
