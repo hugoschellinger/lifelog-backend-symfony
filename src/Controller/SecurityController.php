@@ -33,6 +33,12 @@ class SecurityController extends AbstractController
         $this->tokenGenerator = $tokenGenerator;
     }
 
+    #[Route('/test', name: 'test',methods:["GET"])]
+    public function test(): Response
+    {
+        return $this->json("OK", 200);
+    }
+
     #[Route('/register', name: 'register',methods:["POST"])]
     public function registration(Request $request, UserPasswordHasherInterface $passwordHasher): Response
     {
