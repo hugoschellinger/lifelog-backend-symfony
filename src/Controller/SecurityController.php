@@ -15,6 +15,7 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/api', name: 'api_')]
@@ -36,30 +37,16 @@ class SecurityController extends AbstractController
     #[Route('/test', name: 'test',methods:["GET"])]
     public function test(Request $request): Response
     {
-        dump($this->getUser());
         return $this->json("OK", 200);
     }
 
     #[Route('/register', name: 'register',methods:["POST"])]
     public function registration(Request $request, UserPasswordHasherInterface $passwordHasher): Response
     {
-        $email = $request->toArray()["email"] ?? null;
-        $password = $request->toArray()["password"] ?? null;
-        $firstname = $request->toArray()["firstname"] ?? null;
-        $lastname = $request->toArray()["lastname"] ?? null;
-
-        if (!$email) {
-            throw new BadRequestHttpException($this->translator->trans("Email is empty"));
-        }
-        if (!$password) {
-            throw new BadRequestHttpException($this->translator->trans("Password is empty"));
-        }
-        if (!$firstname) {
-            throw new BadRequestHttpException($this->translator->trans("Firstname is empty"));
-        }
-        if (!$lastname) {
-            throw new BadRequestHttpException($this->translator->trans("Lastname is empty"));
-        }
+        $email = $request->toArray()["email"];
+        $password = $request->toArray()["password"];
+        $firstname = $request->toArray()["firstname"];
+        $lastname = $request->toArray()["lastname"];
 
         $alreadyRegisted = $this->userService->findOneBy(["email" => $email]);
 

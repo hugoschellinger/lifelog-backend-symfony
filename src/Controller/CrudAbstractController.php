@@ -1,18 +1,20 @@
 <?php
 namespace App\Controller;
 
+use App\Service\AbstractService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Serializer\SerializerInterface;
 
 abstract class CrudAbstractController extends AbstractController{
 
-    private string $class;
+    protected string $class;
+    protected AbstractService $service;
+    protected array $context;
 
-    public function __construct(string $class)
+    public function __construct(string $class,AbstractService $service,array $context)
     {
         $this->class=$class;
+        $this->service=$service;
+        $this->context=$context;
     }
 
 }
