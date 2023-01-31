@@ -74,8 +74,6 @@ class SecurityController extends AbstractController
 
         $this->userService->save($user, true);
 
-
-
         return $this->json($user, 201);
     }
 
