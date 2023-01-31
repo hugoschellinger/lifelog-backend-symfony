@@ -34,8 +34,9 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/test', name: 'test',methods:["GET"])]
-    public function test(): Response
+    public function test(Request $request): Response
     {
+        dump($this->getUser());
         return $this->json("OK", 200);
     }
 
