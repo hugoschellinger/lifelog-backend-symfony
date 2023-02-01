@@ -4,12 +4,12 @@ namespace App\Service;
 
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 
-class AbstractService implements InterfaceService
+abstract class AbstractService implements InterfaceService
 {
 
-    protected ServiceEntityRepository $repository;
+    protected $repository;
 
-    function __construct(ServiceEntityRepository $repository)
+    function __construct($repository)
     {
         $this->repository=$repository;
     }
@@ -43,7 +43,8 @@ class AbstractService implements InterfaceService
         return $this->repository->save($entity,true);
     }
 
-    public function delete($entity){
-        return $this->repository->delete($entity);
+    public function delete($entity)
+    {
+        $this->repository->remove($entity,true);
     }
 }

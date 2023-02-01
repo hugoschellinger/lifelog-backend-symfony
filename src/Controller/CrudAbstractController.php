@@ -41,24 +41,27 @@ abstract class CrudAbstractController extends AbstractController
         return $this->json($entity, 201, [], $this->context);
     }
 
-    #[Route(path: "/{entity}", name: "getOne", methods: ["GET"])]
-    public function getOne(string $entity): Response
+    #[Route(path: "/{id}", name: "getOne", methods: ["GET"])]
+    public function getOne($id): Response
     {
+        $entity=$this->service->findOneBy(["id"=>$id]);
         return $this->json($entity, 200, [], $this->context);
     }
 
-    #[Route(path: "/{entity}", name: "modifyOne", methods: ["PUT"])]
-    public function modifyOne(string $entity, Request $request, SerializerInterface $serializer): Response
+    #[Route(path: "/{id}", name: "modifyOne", methods: ["PUT"])]
+    public function modifyOne(string $id, Request $request, SerializerInterface $serializer): Response
     {
+        $entity=$this->service->findOneBy(["id"=>$id]);
         $serializer->deserialize($request->getContent(), User::class, "json", [...$this->context, AbstractNormalizer::OBJECT_TO_POPULATE => $entity]);
         $this->service->save($entity);
 
         return $this->json($entity, 202, [], $this->context);
     }
 
-    #[Route(path: "/{entity}", name: "deleteOne", methods: ["DELETE"])]
-    public function deleteOne(string $entity): Response
+    #[Route(path: "/{id}", name: "deleteOne", methods: ["DELETE"])]
+    public function deleteOne(string $id): Response
     {
+        $entity=$this->service->findOneBy(["id"=>$id]);
         $this->service->delete($entity);
 
         return $this->json("OK", 200, [], $this->context);
