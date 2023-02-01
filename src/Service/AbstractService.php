@@ -42,4 +42,8 @@ class AbstractService implements InterfaceService
     {
         return $this->repository->save($entity,true);
     }
+
+    public function delete($entity){
+        return $this->repository->delete($entity);
+    }
 }
