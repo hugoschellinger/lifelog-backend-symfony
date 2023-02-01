@@ -20,7 +20,7 @@ class UserController extends CrudAbstractController{
         $this->translator=$translator;
     }
 
-    #[Route("/password",name:"modify_password",methods:["PUT"])]
+    #[Route("/password",name:"modify_password",methods:["PATCH"])]
     public function setPassword(Request $request,UserPasswordHasherInterface $hasher){
 
         $password=$request->toArray()["password"];
@@ -29,7 +29,7 @@ class UserController extends CrudAbstractController{
         $user=$this->service->findOneBy(["email" => $this->getUser()->getUserIdentifier()]);
 
         if(!$hasher->isPasswordValid($user,$password)){
-            throw new BadRequestException("Le mot de passe est incorrect");
+            throw new BadRequestException($this->translator->trans("password invalid"));
         }
 
         $hashedPassword=$hasher->hashPassword($user,$newPassword);
