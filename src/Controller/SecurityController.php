@@ -40,6 +40,12 @@ class SecurityController extends AbstractController
         return $this->json("OK", 200);
     }
 
+    #[Route('/whoami', name: 'whoami',methods:["GET"])]
+    public function whoami(): Response
+    {
+        return $this->json($this->getUser(), 200, [], ["groups" => "User:read"]);
+    }
+
     #[Route('/register', name: 'register',methods:["POST"])]
     public function registration(Request $request, UserPasswordHasherInterface $passwordHasher): Response
     {

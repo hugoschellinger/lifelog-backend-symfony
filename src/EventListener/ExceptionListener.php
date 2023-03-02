@@ -26,7 +26,7 @@ class ExceptionListener
         if ($exception instanceof HttpExceptionInterface) {
             $response->setStatusCode($exception->getStatusCode());
             $response->headers->replace(["content-type"=>"application/json"]);
-            $message = sprintf(json_encode(['message'=>$exception->getMessage(),'code'=>$exception->getStatusCode()]));
+            $message = sprintf(json_encode($exception->getMessage()));
             $exception= (new Exception())
             ->setCode($exception->getStatusCode())
             ->setMessage($exception->getMessage());

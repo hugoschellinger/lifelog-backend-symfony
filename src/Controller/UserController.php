@@ -16,7 +16,7 @@ class UserController extends CrudAbstractController{
 
     public function __construct(UserService $service,TranslatorInterface $translator)
     {
-        parent::__construct(User::class,$service,["User:modify"]);
+        parent::__construct(User::class,$service,["groups" => "User:read"],["firstname", "lastname"]);
         $this->translator=$translator;
     }
 

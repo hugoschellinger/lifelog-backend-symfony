@@ -17,12 +17,14 @@ abstract class CrudAbstractController extends AbstractController
     protected string $class;
     protected AbstractService $service;
     protected array $context;
+    protected array $modifyAttributes;
 
-    public function __construct(string $class, AbstractService $service, array $context)
+    public function __construct(string $class, AbstractService $service, array $context, array $modifyAttributes=null)
     {
         $this->class = $class;
         $this->service = $service;
         $this->context = $context;
+        $this->context = $modifyAttributes;
     }
 
 
@@ -52,7 +54,11 @@ abstract class CrudAbstractController extends AbstractController
     public function modifyOne(string $id, Request $request, SerializerInterface $serializer): Response
     {
         $entity=$this->service->findOneBy(["id"=>$id]);
-        $serializer->deserialize($request->getContent(), User::class, "json", [...$this->context, AbstractNormalizer::OBJECT_TO_POPULATE => $entity]);
+        $modifyContext = [...$this->context, AbstractNormalizer::OBJECT_TO_POPULATE => $entity];
+        if($this->modifyAttributes){
+            $modifyAttributes[]=$this->modifyAttributes;
+        }
+        $serializer->deserialize($request->getContent(), User::class, "json", $modifyContext);
         $this->service->save($entity);
 
         return $this->json($entity, 202, [], $this->context);
