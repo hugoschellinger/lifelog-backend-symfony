@@ -26,18 +26,14 @@ class ExceptionListener
         if ($exception instanceof HttpExceptionInterface) {
             $response->setStatusCode($exception->getStatusCode());
             $response->headers->replace(["content-type"=>"application/json"]);
-            $message = sprintf(json_encode($exception->getMessage()));
+            $message = sprintf(json_encode(['message'=>$exception->getMessage(),'code'=>$exception->getStatusCode()]));
             $exception= (new Exception())
             ->setCode($exception->getStatusCode())
             ->setMessage($exception->getMessage());
 
             $this->exceptionService->save($exception);
         } else {
-            $message = sprintf(
-                'My Error says: %s with code: %s',
-                $exception->getMessage(),
-                $exception->getCode()
-            );
+            $message = sprintf(json_encode(['message'=>$exception->getMessage(),'code'=>$exception->getCode()]));
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
         }
 
