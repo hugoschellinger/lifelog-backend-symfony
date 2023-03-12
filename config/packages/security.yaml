@@ -26,6 +26,7 @@ security:
 
     access_control:
         - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
+        - { path: ^/api/user/verification, roles: PUBLIC_ACCESS }
         - { path: ^/api/mail, roles: PUBLIC_ACCESS }
         - { path: ^/api/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/register, roles: PUBLIC_ACCESS }

@@ -1,5 +1,7 @@
 twig:
     default_path: '%kernel.project_dir%/templates'
+    globals:
+        DOMAIN: '%env(resolve:DOMAIN)%'
 
 when@test:
     twig:

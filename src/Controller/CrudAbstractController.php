@@ -27,7 +27,6 @@ abstract class CrudAbstractController extends AbstractController
         $this->context = $modifyAttributes;
     }
 
-
     #[Route(path: "", name: "getAll", methods: ["GET"])]
     public function getAll(): Response
     {

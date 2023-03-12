@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Repository\UserRepository;
 use App\Service\MailService;
 use App\Service\UserService;
 use DateTimeImmutable;
@@ -15,7 +14,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 #[Route('/api', name: 'api_')]
@@ -35,7 +33,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/test', name: 'test',methods:["GET"])]
-    public function test(Request $request): Response
+    public function test(): Response
     {
         return $this->json("OK", 200);
     }
@@ -47,7 +45,7 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/register', name: 'register',methods:["POST"])]
-    public function registration(Request $request, UserPasswordHasherInterface $passwordHasher): Response
+    public function registration(Request $request, UserPasswordHasherInterface $passwordHasher)
     {
         $email = $request->toArray()["email"];
         $password = $request->toArray()["password"];
@@ -69,12 +67,13 @@ class SecurityController extends AbstractController
         $user->setPassword($hashedPassword);
         $user->setFirstname($firstname);
         $user->setLastname($lastname);
+        $user->setVerificationToken($this->tokenGenerator->generateToken());
         
         $this->mailService->send(EmailType::REGISTRATION ,$user);
 
         $this->userService->save($user, true);
-
-        return $this->json($user, 201);
+        
+        return $this->json($user, 201,[],["groups"=>["User:read"]]);
     }
 
     #[Route('/resetPassword', name: 'reset_password',methods:["POST"])]
