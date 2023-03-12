@@ -5,15 +5,20 @@ use App\Entity\User;
 use App\Service\UserService;
 use DateTimeImmutable;
 use Lexik\Bundle\JWTAuthenticationBundle\Event\AuthenticationSuccessEvent;
+use Symfony\Component\HttpKernel\Exception\AccessDeniedHttpException;
+use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Contracts\Translation\TranslatorInterface;
 
 class AuthenticationSuccessListener
 {
 
     private UserService $userService;
+    private TranslatorInterface $translator;
 
-    public function __construct(UserService $userService)
+    public function __construct(UserService $userService, TranslatorInterface $translator)
     {
         $this->userService = $userService;
+        $this->translator = $translator;
     }
 
 /**
@@ -26,6 +31,10 @@ public function onAuthenticationSuccessResponse(AuthenticationSuccessEvent $even
 
     if (!$user instanceof User) {
         return;
+    }
+
+    if($user->getVerificationToken()){
+        throw new AccessDeniedHttpException($this->translator->trans("Account is not verified"));
     }
 
     $user->setLastConnexion(new DateTimeImmutable());
