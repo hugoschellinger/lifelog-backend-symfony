@@ -11,7 +11,7 @@ use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-#[Route("/api/user", name:"user_")]
+#[Route("/user", name:"user_")]
 class UserController extends CrudAbstractController{
 
     private TranslatorInterface $translator;

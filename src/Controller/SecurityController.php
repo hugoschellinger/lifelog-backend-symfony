@@ -16,7 +16,6 @@ use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
-#[Route('/api', name: 'api_')]
 class SecurityController extends AbstractController
 {
     private UserService $userService;
@@ -33,8 +32,10 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/test', name: 'test',methods:["GET"])]
-    public function test(): Response
+    public function test(Request $request): Response
     {
+        dump($this->translator->trans("Email already used"));
+
         return $this->json("OK", 200);
     }
 
