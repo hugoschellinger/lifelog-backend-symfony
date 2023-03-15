@@ -32,10 +32,8 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/test', name: 'test',methods:["GET"])]
-    public function test(Request $request): Response
+    public function test(): Response
     {
-        dump($this->translator->trans("Email already used"));
-
         return $this->json("OK", 200);
     }
 

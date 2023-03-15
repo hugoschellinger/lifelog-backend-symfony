@@ -28,6 +28,7 @@ security:
         - { path: ^/api/(%myAppName.locales%)/token/refresh, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%myAppName.locales%)/user/verification, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%myAppName.locales%)/test, roles: PUBLIC_ACCESS }
+        - { path: ^/api/(%myAppName.locales%)/home, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%myAppName.locales%)/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%myAppName.locales%)/register, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%myAppName.locales%), roles: IS_AUTHENTICATED_FULLY }
