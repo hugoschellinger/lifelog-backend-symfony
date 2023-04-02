@@ -2,7 +2,9 @@
 
 namespace App\Controller;
 
+use App\Entity\FCMToken;
 use App\Entity\User;
+use App\Service\FireBaseService;
 use App\Service\MailService;
 use App\Service\UserService;
 use DateTimeImmutable;
@@ -11,6 +13,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Notifier\Bridge\Firebase\Notification\WebNotification;
+use Symfony\Component\Notifier\ChatterInterface;
+use Symfony\Component\Notifier\Message\ChatMessage;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
@@ -32,8 +37,12 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/test', name: 'test',methods:["GET"])]
-    public function test(): Response
+    public function test(UserService $userService, FireBaseService $FireBaseService): Response
     {
+        /** @var User */
+        $user=$userService->findOneBy(["id"=>$this->getUser()]);
+        $FireBaseService->sendNotification($user,"heyy","heyyyyyyyy");
+
         return $this->json("OK", 200);
     }
 

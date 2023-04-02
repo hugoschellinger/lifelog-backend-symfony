@@ -4,6 +4,9 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use DateTimeImmutable;
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
+use Doctrine\DBAL\Types\Types;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -53,9 +56,13 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $resetAt = null;
 
+    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Device::class, orphanRemoval: true, cascade:["persist"])]
+    private Collection $device;
+
     public function __construct()
     {
         $this->lastConnexion=new DateTimeImmutable();
+        $this->device = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -196,6 +203,36 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setResetAt(?\DateTimeImmutable $resetAt): self
     {
         $this->resetAt = $resetAt;
+
+        return $this;
+    }
+
+    /**
+     * @return Collection<int, device>
+     */
+    public function getDevice(): Collection
+    {
+        return $this->device;
+    }
+
+    public function addDevice(Device $device): self
+    {
+        if (!$this->device->contains($device)) {
+            $this->device->add($device);
+            $device->setUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removeDevice(Device $device): self
+    {
+        if ($this->device->removeElement($device)) {
+            // set the owning side to null (unless already changed)
+            if ($device->getUser() === $this) {
+                $device->setUser(null);
+            }
+        }
 
         return $this;
     }
