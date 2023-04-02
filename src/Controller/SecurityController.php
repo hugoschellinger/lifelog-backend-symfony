@@ -2,7 +2,6 @@
 
 namespace App\Controller;
 
-use App\Entity\FCMToken;
 use App\Entity\User;
 use App\Service\FireBaseService;
 use App\Service\MailService;
@@ -10,12 +9,11 @@ use App\Service\UserService;
 use DateTimeImmutable;
 use EmailType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Notifier\Bridge\Firebase\Notification\WebNotification;
-use Symfony\Component\Notifier\ChatterInterface;
-use Symfony\Component\Notifier\Message\ChatMessage;
+use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
@@ -44,6 +42,25 @@ class SecurityController extends AbstractController
         $FireBaseService->sendNotification($user,"heyy","heyyyyyyyy");
 
         return $this->json("OK", 200);
+    }
+
+    #[Route('/version', name: 'check_version',methods:["POST"])]
+    public function checkVersion(Request $request): Response
+    {
+        $actualVersion=$request->toArray()["version"] ?? null;
+        $currentVersion=$this->getParameter("app.mobile_version");
+
+        if(!$actualVersion){
+            throw new BadRequestException($this->translator->trans("version is empty"));
+        }
+
+        $isUpdated = version_compare($currentVersion,$actualVersion,"<=");
+
+        if(!$isUpdated){
+            throw new PreconditionFailedHttpException($this->translator->trans("update required"),null,426);
+        }
+
+        return $this->json(["message","OK"], 200);
     }
 
     #[Route('/whoami', name: 'whoami',methods:["GET"])]

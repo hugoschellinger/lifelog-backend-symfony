@@ -25,13 +25,14 @@ security:
                 check_path: /api/token/refresh # or, you may use the `api_refresh_token` route name
 
     access_control:
-        - { path: ^/api/(%myAppName.locales%)/token/refresh, roles: PUBLIC_ACCESS }
-        - { path: ^/api/(%myAppName.locales%)/user/verification, roles: PUBLIC_ACCESS }
-        # - { path: ^/api/(%myAppName.locales%)/test, roles: PUBLIC_ACCESS }
-        - { path: ^/api/(%myAppName.locales%)/home, roles: PUBLIC_ACCESS }
-        - { path: ^/api/(%myAppName.locales%)/login, roles: PUBLIC_ACCESS }
-        - { path: ^/api/(%myAppName.locales%)/register, roles: PUBLIC_ACCESS }
-        - { path: ^/api/(%myAppName.locales%), roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api/(%app.locales%)/token/refresh, roles: PUBLIC_ACCESS }
+        - { path: ^/api/(%app.locales%)/user/verification, roles: PUBLIC_ACCESS }
+        # - { path: ^/api/(%app.locales%)/test, roles: PUBLIC_ACCESS }
+        - { path: ^/api/(%app.locales%)/home, roles: PUBLIC_ACCESS }
+        - { path: ^/api/(%app.locales%)/version, roles: PUBLIC_ACCESS }
+        - { path: ^/api/(%app.locales%)/login, roles: PUBLIC_ACCESS }
+        - { path: ^/api/(%app.locales%)/register, roles: PUBLIC_ACCESS }
+        - { path: ^/api/(%app.locales%), roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:
