@@ -1,2 +1,2 @@
 <h1>Bienvenu {{user.firstname}}</h1>
-<a href="{{DOMAIN}}/api/user/verification?token={{user.verificationToken}}">Lien de vérification</a>
+<a href="{{DOMAIN}}/api/{{ app.request.locale }}/user/verification?token={{user.verificationToken}}">Lien de vérification</a>

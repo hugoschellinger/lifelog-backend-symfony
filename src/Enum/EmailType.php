@@ -1,7 +1,6 @@
 <?php
 
 interface EmailType {
-    const VERIFICATION_EMAIL="VERIFICATION_EMAIL";
     const FORGOT_PASSWORD="FORGOT_PASSWORD";
     const REGISTRATION="REGISTRATION";
 }

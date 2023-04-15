@@ -26,7 +26,7 @@ class SecurityController extends AbstractController
     private TranslatorInterface $translator;
     private TokenGeneratorInterface $tokenGenerator;
 
-    public function __construct(UserService $userService, MailService $mailService,TranslatorInterface $translator,TokenGeneratorInterface $tokenGenerator)
+    public function __construct(UserService $userService, MailService $mailService, TranslatorInterface $translator, TokenGeneratorInterface $tokenGenerator)
     {
         $this->userService = $userService;
         $this->mailService = $mailService;
@@ -34,42 +34,42 @@ class SecurityController extends AbstractController
         $this->tokenGenerator = $tokenGenerator;
     }
 
-    #[Route('/test', name: 'test',methods:["GET"])]
+    #[Route('/test', name: 'test', methods: ["GET"])]
     public function test(UserService $userService, FireBaseService $FireBaseService): Response
     {
         /** @var User */
-        $user=$userService->findOneBy(["id"=>$this->getUser()]);
-        $FireBaseService->sendNotification($user,"heyy","heyyyyyyyy");
+        $user = $userService->findOneBy(["id" => $this->getUser()]);
+        $FireBaseService->sendNotification($user, "heyy", "heyyyyyyyy");
 
         return $this->json("OK", 200);
     }
 
-    #[Route('/version', name: 'check_version',methods:["POST"])]
+    #[Route('/version', name: 'check_version', methods: ["POST"])]
     public function checkVersion(Request $request): Response
     {
-        $actualVersion=$request->toArray()["version"] ?? null;
-        $currentVersion=$this->getParameter("app.mobile_version");
+        $actualVersion = $request->toArray()["version"] ?? null;
+        $currentVersion = $this->getParameter("app.mobile_version");
 
-        if(!$actualVersion){
+        if (!$actualVersion) {
             throw new BadRequestException($this->translator->trans("version is empty"));
         }
 
-        $isUpdated = version_compare($currentVersion,$actualVersion,"<=");
+        $isUpdated = version_compare($currentVersion, $actualVersion, "<=");
 
-        if(!$isUpdated){
-            throw new PreconditionFailedHttpException($this->translator->trans("update required"),null,426);
+        if (!$isUpdated) {
+            throw new PreconditionFailedHttpException($this->translator->trans("update required"), null, 426);
         }
 
-        return $this->json(["message","OK"], 200);
+        return $this->json(["message", "OK"], 200);
     }
 
-    #[Route('/whoami', name: 'whoami',methods:["GET"])]
+    #[Route('/whoami', name: 'whoami', methods: ["GET"])]
     public function whoami(): Response
     {
         return $this->json($this->getUser(), 200, [], ["groups" => "User:read"]);
     }
 
-    #[Route('/register', name: 'register',methods:["POST"])]
+    #[Route('/register', name: 'register', methods: ["POST"])]
     public function registration(Request $request, UserPasswordHasherInterface $passwordHasher)
     {
         $email = $request->toArray()["email"];
@@ -93,33 +93,60 @@ class SecurityController extends AbstractController
         $user->setFirstname($firstname);
         $user->setLastname($lastname);
         $user->setVerificationToken($this->tokenGenerator->generateToken());
-        
-        $this->mailService->send(EmailType::REGISTRATION ,$user);
+
+        $this->mailService->send(EmailType::REGISTRATION, $user);
 
         $this->userService->save($user, true);
-        
-        return $this->json($user, 201,[],["groups"=>["User:read"]]);
+
+        return $this->json($user, 201, [], ["groups" => ["User:read"]]);
     }
 
-    #[Route('/resetPassword', name: 'reset_password',methods:["POST"])]
-    public function resetPassword(Request $request): Response
+    #[Route('/resetPassword', name: 'reset_password', methods: ["POST", "GET"])]
+    public function resetPassword(Request $request, UserPasswordHasherInterface $hasher): Response
     {
-        $email=$request->toArray()["email"] ?? null;
+      
+        $token = $request->get("token") ?? null;
+        $newPassword = $request->toArray()["newPassword"] ?? null;
 
-        if(!$email){
-            throw new BadRequestHttpException($this->translator->trans("Email is empty"));
-        }
+        if ($token) {
 
-        $user=$this->userService->findOneBy(["email"=>$email]);
+            if($request->getMethod()=="GET"){
+                
+                return $this->render('security/resetPassword.html.twig');
+            }
 
-        if($user){
-            $user->setPasswordToken($this->tokenGenerator->generateToken());
-            $user->setResetAt(new DateTimeImmutable());
+            $user = $this->userService->findOneBy(["passwordToken" => $token]);
 
+            if(!$user){
+                throw new BadRequestHttpException($this->translator->trans("invalid token"));
+            }
+            if(!$newPassword){
+                throw new BadRequestHttpException($this->translator->trans("New password is empty"));
+            }
+
+            $hashedPassword=$hasher->hashPassword($user,$newPassword);
+            $user->setPassword($hashedPassword);
             $this->userService->save($user);
-            $this->mailService->send(EmailType::FORGOT_PASSWORD,$user);
-        }
 
-        return $this->json(["message"=>"OK"],204);
+        } else {
+
+            $email = $request->toArray()["email"] ?? null;
+
+            if (!$email) {
+                throw new BadRequestHttpException($this->translator->trans("Email is empty"));
+            }
+
+            $user = $this->userService->findOneBy(["email" => $email]);
+
+            if ($user) {
+                $user->setPasswordToken($this->tokenGenerator->generateToken());
+                $user->setResetAt(new DateTimeImmutable());
+
+                $this->userService->save($user);
+                $this->mailService->send(EmailType::FORGOT_PASSWORD, $user);
+            }
+
+            return $this->json(["message" => "OK"], 204);
+        }
     }
 }

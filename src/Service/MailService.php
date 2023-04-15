@@ -17,7 +17,6 @@ class MailService extends AbstractService
     private $MAIL_SENDER = "no-reply@initAPI.fr";
     private $MAIL_TYPE_INFO = [
         "FORGOT_PASSWORD" => ["subject"=> "Mot de passe oublié","template"=>"forgotPassword"],
-        "VERIFICATION_EMAIL" => ["subject"=> "Vérification de l'adresse mail","template"=>"verificationEmail"],
         "REGISTRATION" => ["subject"=> "Bienvenu","template"=>"registration"],
     ];
 

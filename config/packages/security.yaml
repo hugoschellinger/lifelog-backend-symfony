@@ -29,6 +29,7 @@ security:
         - { path: ^/api/(%app.locales%)/user/verification, roles: PUBLIC_ACCESS }
         # - { path: ^/api/(%app.locales%)/test, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%app.locales%)/home, roles: PUBLIC_ACCESS }
+        - { path: ^/api/(%app.locales%)/resetPassword, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%app.locales%)/version, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%app.locales%)/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%app.locales%)/register, roles: PUBLIC_ACCESS }
