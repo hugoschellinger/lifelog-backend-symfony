@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Service\FireBaseService;
 use App\Service\MailService;
 use App\Service\UserService;
+use DateInterval;
 use DateTimeImmutable;
 use EmailType;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
@@ -104,30 +105,44 @@ class SecurityController extends AbstractController
     #[Route('/resetPassword', name: 'reset_password', methods: ["POST", "GET"])]
     public function resetPassword(Request $request, UserPasswordHasherInterface $hasher): Response
     {
-      
         $token = $request->get("token") ?? null;
-        $newPassword = $request->toArray()["newPassword"] ?? null;
 
         if ($token) {
 
-            if($request->getMethod()=="GET"){
-                
-                return $this->render('security/resetPassword.html.twig');
-            }
-
+            /** @var User */
             $user = $this->userService->findOneBy(["passwordToken" => $token]);
 
-            if(!$user){
+            if (!$user) {
                 throw new BadRequestHttpException($this->translator->trans("invalid token"));
             }
-            if(!$newPassword){
+
+            //RETURN PASSWORD FORM
+            if ($request->getMethod() == "GET") return $this->render('security/resetPassword.html.twig');
+
+            $newPassword = $request->get("newPassword") ?? null;
+            $repeatedPassword = $request->get("repeatedPassword") ?? null;
+
+            if($repeatedPassword !== $newPassword){
+                throw new BadRequestHttpException($this->translator->trans("Passwords are different"));
+            }
+
+            if (!$newPassword) {
                 throw new BadRequestHttpException($this->translator->trans("New password is empty"));
             }
 
-            $hashedPassword=$hasher->hashPassword($user,$newPassword);
+            //VERIFICATION PASSWORD_RESET_LIMIT
+            $limitPasswordReset = $user->getResetAt()->add(new DateInterval("PT" . $this->getParameter("app.password_reset_limit") . "M"));
+            if ($limitPasswordReset < new DateTimeImmutable()) {
+                throw new BadRequestHttpException($this->translator->trans("The time limit for changing the password has elapsed"));
+            }
+
+            $hashedPassword = $hasher->hashPassword($user, $newPassword);
             $user->setPassword($hashedPassword);
+            $user->setPasswordToken(null);
+            $user->setResetAt(null);
             $this->userService->save($user);
 
+            return $this->render('security/resetPassword.html.twig');
         } else {
 
             $email = $request->toArray()["email"] ?? null;
