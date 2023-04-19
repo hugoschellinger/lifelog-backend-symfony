@@ -33,10 +33,6 @@ public function onAuthenticationSuccessResponse(AuthenticationSuccessEvent $even
         return;
     }
 
-    if($user->getVerificationToken()){
-        throw new AccessDeniedHttpException($this->translator->trans("Account is not verified"));
-    }
-
     $user->setLastConnexion(new DateTimeImmutable());
     $this->userService->save($user,true);
 
