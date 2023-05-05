@@ -36,7 +36,7 @@ abstract class CrudAbstractController extends AbstractController
     #[Route(path: "", name: "createOne", methods: ["POST"])]
     public function createOne(Request $request, SerializerInterface $serializer): Response
     {
-        $entity = $serializer->deserialize($request->getContent(), User::class, "json");
+        $entity = $serializer->deserialize($request->getContent(), $this->class, "json");
         $this->service->save($entity);
 
         return $this->json($entity, 201, [], $this->context);
@@ -57,7 +57,7 @@ abstract class CrudAbstractController extends AbstractController
         if($this->modifyAttributes){
             $modifyAttributes[]=$this->modifyAttributes;
         }
-        $serializer->deserialize($request->getContent(), User::class, "json", $modifyContext);
+        $serializer->deserialize($request->getContent(), $this->class, "json", $modifyContext);
         $this->service->save($entity);
 
         return $this->json($entity, 202, [], $this->context);

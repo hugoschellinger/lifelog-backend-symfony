@@ -18,6 +18,7 @@ use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
+use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SecurityController extends AbstractController
@@ -65,9 +66,11 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/whoami', name: 'whoami', methods: ["GET"])]
-    public function whoami(): Response
+    public function whoami(NormalizerInterface $normalizer): Response
     {
-        return $this->json($this->getUser(), 200, [], ["groups" => "User:read"]);
+        /** @var User */
+        $user = $this->userService->findOneBy(["email" => $this->getUser()->getUserIdentifier()]);
+        return $this->json([...$normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]);
     }
 
     #[Route('/register', name: 'register', methods: ["POST"])]
