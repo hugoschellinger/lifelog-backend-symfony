@@ -20,14 +20,10 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class DeviceController extends AbstractController{
 
     private DeviceService $deviceService;
-    private TranslatorInterface $translator;
-    private UserService $userService;
 
-    public function __construct(DeviceService $deviceService, TranslatorInterface $translator, UserService $userService)
+    public function __construct(DeviceService $deviceService)
     {
         $this->deviceService=$deviceService;
-        $this->translator=$translator;
-        $this->userService=$userService;
     }
 
     #[Route('/update', name: 'update', methods:["PUT"])]
@@ -35,24 +31,8 @@ class DeviceController extends AbstractController{
     {
         $token=$request->toArray()["token"] ?? null;
 
-        if(!$token){
-            throw new BadRequestHttpException($this->translator->trans("FCM Token is empty"));
-        }
+        $this->deviceService->updateDevice($token, $this->getUser());
 
-        $user= $this->userService->findOneBy(["id"=>$this->getUser()]);
-        if(!$user){
-            throw new BadRequestHttpException($this->translator->trans("User not found"));
-        }
-
-        /** @var FCMToken */
-        $fcmToken=$this->deviceService->findOneBy(["token"=>$token]);
-
-        if(!$fcmToken){
-            $fcmToken=new Device();
-            $fcmToken->setUser($user);
-            $fcmToken->setToken($token);
-        }
-        $this->deviceService->save($fcmToken);
         return $this->json(["message"=>"OK"]);
     }
 }

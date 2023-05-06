@@ -9,6 +9,7 @@ use App\Service\UserService;
 use DateInterval;
 use DateTimeImmutable;
 use EmailType;
+use SecurityService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
@@ -27,13 +28,15 @@ class SecurityController extends AbstractController
     private MailService $mailService;
     private TranslatorInterface $translator;
     private TokenGeneratorInterface $tokenGenerator;
+    private SecurityService $securityService;
 
-    public function __construct(UserService $userService, MailService $mailService, TranslatorInterface $translator, TokenGeneratorInterface $tokenGenerator)
+    public function __construct(UserService $userService, MailService $mailService, TranslatorInterface $translator, TokenGeneratorInterface $tokenGenerator, SecurityService $securityService)
     {
         $this->userService = $userService;
         $this->mailService = $mailService;
         $this->translator = $translator;
         $this->tokenGenerator = $tokenGenerator;
+        $this->securityService = $securityService;
     }
 
     #[Route('/test', name: 'test', methods: ["GET"])]
@@ -52,15 +55,7 @@ class SecurityController extends AbstractController
         $actualVersion = $request->toArray()["version"] ?? null;
         $currentVersion = $this->getParameter("app.mobile_version");
 
-        if (!$actualVersion) {
-            throw new BadRequestException($this->translator->trans("version is empty"));
-        }
-
-        $isUpdated = version_compare($currentVersion, $actualVersion, "<=");
-
-        if (!$isUpdated) {
-            throw new PreconditionFailedHttpException($this->translator->trans("update required"), null, 426);
-        }
+        $this->securityService->checkVersion($actualVersion,$currentVersion);
 
         return $this->json(["message", "OK"], 200);
     }
@@ -74,39 +69,20 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/register', name: 'register', methods: ["POST"])]
-    public function registration(Request $request, UserPasswordHasherInterface $passwordHasher)
+    public function registration(Request $request, )
     {
         $email = $request->toArray()["email"];
         $password = $request->toArray()["password"];
         $firstname = $request->toArray()["firstname"];
         $lastname = $request->toArray()["lastname"];
 
-        $alreadyRegisted = $this->userService->findOneBy(["email" => $email]);
-
-        if ($alreadyRegisted) {
-            throw new BadRequestHttpException($this->translator->trans("Email already used"));
-        }
-
-        $user = new User();
-        $user->setEmail($email);
-        $hashedPassword = $passwordHasher->hashPassword(
-            $user,
-            $password
-        );
-        $user->setPassword($hashedPassword);
-        $user->setFirstname($firstname);
-        $user->setLastname($lastname);
-        $user->setVerificationToken($this->tokenGenerator->generateToken());
-
-        $this->mailService->send(EmailType::REGISTRATION, $user);
-
-        $this->userService->save($user, true);
+        $user = $this->securityService->register($email, $password, $firstname, $lastname);
 
         return $this->json($user, 201, [], ["groups" => ["User:read"]]);
     }
 
     #[Route('/resetPassword', name: 'reset_password', methods: ["POST", "GET"])]
-    public function resetPassword(Request $request, UserPasswordHasherInterface $hasher): Response
+    public function resetPassword(Request $request): Response
     {
         $token = $request->get("token") ?? null;
 
@@ -133,17 +109,7 @@ class SecurityController extends AbstractController
                 throw new BadRequestHttpException($this->translator->trans("New password is empty"));
             }
 
-            //VERIFICATION PASSWORD_RESET_LIMIT
-            $limitPasswordReset = $user->getResetAt()->add(new DateInterval("PT" . $this->getParameter("app.password_reset_limit") . "M"));
-            if ($limitPasswordReset < new DateTimeImmutable()) {
-                throw new BadRequestHttpException($this->translator->trans("The time limit for changing the password has elapsed"));
-            }
-
-            $hashedPassword = $hasher->hashPassword($user, $newPassword);
-            $user->setPassword($hashedPassword);
-            $user->setPasswordToken(null);
-            $user->setResetAt(null);
-            $this->userService->save($user);
+            $this->securityService->resetPassword($user, $newPassword, $this->getParameter("app.password_reset_limit"));
 
             return $this->render('security/resetPassword.html.twig');
         } else {
@@ -157,11 +123,7 @@ class SecurityController extends AbstractController
             $user = $this->userService->findOneBy(["email" => $email]);
 
             if ($user) {
-                $user->setPasswordToken($this->tokenGenerator->generateToken());
-                $user->setResetAt(new DateTimeImmutable());
-
-                $this->userService->save($user);
-                $this->mailService->send(EmailType::FORGOT_PASSWORD, $user);
+                $this->securityService->askResetpassword($user);
             }
 
             return $this->json(["message" => "OK"], 204);

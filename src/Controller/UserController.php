@@ -15,11 +15,13 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 class UserController extends CrudAbstractController{
 
     private TranslatorInterface $translator;
+    private UserService $userService;
 
-    public function __construct(UserService $service,TranslatorInterface $translator)
+    public function __construct(UserService $service,TranslatorInterface $translator, UserService $userService)
     {
         parent::__construct(User::class,$service,["groups" => "User:read"],["firstname", "lastname"]);
         $this->translator=$translator;
+        $this->userService=$userService;
     }
 
     #[Route('/verification', name: 'verification_email', methods:["GET"])]
@@ -27,20 +29,7 @@ class UserController extends CrudAbstractController{
     {
         $token=$request->get("token") ?? null;
 
-        if(!$token){
-            throw new BadRequestHttpException($this->translator->trans("Token is empty"));
-        }
-
-        /** @var User */
-        $user = $this->service->findOneBy(["verificationToken" => $token]);
-
-        if(!$user){
-            throw new BadRequestHttpException($this->translator->trans("Link is wrong"));
-        }
-
-        $user->setVerificationToken(null);
-
-        $this->service->save($user);
+        $this->userService->verificationEmail($token);
 
         return $this->json(["message"=>"OK"],200);
     }
