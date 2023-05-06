@@ -4,38 +4,26 @@ namespace App\Controller;
 
 use App\Entity\User;
 use App\Service\FireBaseService;
-use App\Service\MailService;
 use App\Service\UserService;
-use DateInterval;
-use DateTimeImmutable;
-use EmailType;
-use SecurityService;
+use App\Service\SecurityService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
-use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
-use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
-use Symfony\Component\Security\Csrf\TokenGenerator\TokenGeneratorInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SecurityController extends AbstractController
 {
     private UserService $userService;
-    private MailService $mailService;
     private TranslatorInterface $translator;
-    private TokenGeneratorInterface $tokenGenerator;
     private SecurityService $securityService;
 
-    public function __construct(UserService $userService, MailService $mailService, TranslatorInterface $translator, TokenGeneratorInterface $tokenGenerator, SecurityService $securityService)
+    public function __construct(UserService $userService, TranslatorInterface $translator, SecurityService $securityService)
     {
         $this->userService = $userService;
-        $this->mailService = $mailService;
         $this->translator = $translator;
-        $this->tokenGenerator = $tokenGenerator;
         $this->securityService = $securityService;
     }
 

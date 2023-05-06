@@ -2,8 +2,6 @@
 
 namespace App\Service;
 
-use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
-
 abstract class AbstractService implements InterfaceService
 {
 

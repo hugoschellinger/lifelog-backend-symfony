@@ -1,8 +1,13 @@
 <?php
 
+namespace App\Service;
+
 use App\Entity\User;
 use App\Service\MailService;
 use App\Service\UserService;
+use DateInterval;
+use DateTimeImmutable;
+use EmailType;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
@@ -12,7 +17,6 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SecurityService
 {
-
     private TranslatorInterface $translator;
     private UserService $userService;
     private UserPasswordHasherInterface $passwordHasher;
