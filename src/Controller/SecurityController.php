@@ -7,6 +7,7 @@ use App\Service\FireBaseService;
 use App\Service\UserService;
 use App\Service\SecurityService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -28,11 +29,30 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/test', name: 'test', methods: ["GET"])]
-    public function test(UserService $userService, FireBaseService $FireBaseService): Response
+    public function test(FireBaseService $FireBaseService): Response
     {
         /** @var User */
-        $user = $userService->findOneBy(["id" => $this->getUser()]);
+        $user = $this->userService->findOneBy(["id" => $this->getUser()]);
         $FireBaseService->sendNotification($user, "heyy", "heyyyyyyyy");
+
+        return $this->json("OK", 200);
+    }
+
+    #[Route('/checkEmail', name: 'check_email', methods: ["POST"])]
+    public function checkEmail(Request $request): Response
+    {
+        $email = $request->toArray()["email"] ?? null;
+
+        if(!$email){
+            throw new BadRequestException($this->translator->trans("Email is empty"));
+        }
+
+        /** @var User */
+        $user = $this->userService->findOneBy(["email" => $email]);
+
+        if($user){
+            throw new BadRequestException($this->translator->trans("Email already used"));
+        }
 
         return $this->json("OK", 200);
     }
