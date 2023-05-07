@@ -6,7 +6,6 @@ use App\Entity\Device;
 use App\Entity\User;
 use App\Repository\DeviceRepository;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class DeviceService extends AbstractService
@@ -21,7 +20,7 @@ class DeviceService extends AbstractService
         $this->userService = $userService;
     }
 
-    public function updateDevice($token, UserInterface $user){
+    public function updateDevice($token, User $user){
         if(!$token){
             throw new BadRequestHttpException($this->translator->trans("FCM Token is empty"));
         }
@@ -32,7 +31,7 @@ class DeviceService extends AbstractService
         }
 
         /** @var FCMToken */
-        $fcmToken=$this->findOneBy(["id"=>$user]);
+        $fcmToken=$this->findOneBy(["token"=>$token]);
 
         if(!$fcmToken){
             $fcmToken=new Device();
