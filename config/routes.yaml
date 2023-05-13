@@ -4,6 +4,12 @@ controllers:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+views:
+    prefix: ""
+    resource:
+        path: ../src/Controller/Views/
+        namespace: App\Controller\Views
+    type: attribute
 api_login_check:
     path: /api/login_check
 api_refresh_token:
