@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Service\SecurityService;
 use App\Service\UserService;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
@@ -30,6 +31,14 @@ class UserController extends CrudAbstractController{
         $token=$request->get("token") ?? null;
 
         $this->userService->verificationEmail($token);
+
+        return $this->json(["message"=>"OK"],200);
+    }
+
+    #[Route('/sendVerificationEmail', name: 'send_verification_email', methods:["POST"])]
+    public function sendVerificationEmail(Request $request, SecurityService $securityService): Response
+    {
+        $securityService->sendVerificationEmail($this->getUser());
 
         return $this->json(["message"=>"OK"],200);
     }

@@ -62,11 +62,16 @@ class SecurityService
         $user->setPassword($hashedPassword);
         $user->setFirstname($firstname);
         $user->setLastname($lastname);
+
+        $this->sendVerificationEmail($user);
+
+        $this->userService->save($user, true);
+    }
+
+    public function sendVerificationEmail(User $user){
         $user->setVerificationToken($this->tokenGenerator->generateToken());
 
         $this->mailService->send(EmailType::REGISTRATION, $user);
-
-        $this->userService->save($user, true);
     }
 
     public function resetPassword(User $user, $newPassword, $passwordResetLimit)
