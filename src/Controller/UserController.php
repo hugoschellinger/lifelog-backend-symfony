@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\User;
 use App\Service\SecurityService;
 use App\Service\UserService;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -60,5 +61,21 @@ class UserController extends CrudAbstractController{
         $this->service->save($user);
 
         return $this->json(["message"=>"OK"],204);
+    }
+
+    #[Route("/logout",name:"logout",methods:["POST"])]
+    public function logout(Request $request){
+
+        /** @var User */
+        $user = $this->userService->findOneBy(["id" => $this->getUser()]);
+
+        if(!$user){
+            throw new BadRequestException($this->translator->trans("user no connected"));
+        }
+
+        //TODO : remove le device
+
+
+        return $this->json(["message"=>"OK"],200);
     }
 }
