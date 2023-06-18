@@ -30,7 +30,7 @@ class MailService extends AbstractService
     /**
      * Custom Email
      */
-    public function sendCustomEmail(string $type, User $user, string $subject, string $template, array $context): void
+    public function sendCustomEmail(string $type, User $user, string $subject, string $template): void
     {
 
         $mail = (new Mail())

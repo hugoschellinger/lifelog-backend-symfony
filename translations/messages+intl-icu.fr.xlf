@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <xliff xmlns="urn:oasis:names:tc:xliff:document:1.2" version="1.2">
-  <file source-language="en" target-language="fr" datatype="plaintext" original="file.ext">
+  <file source-language="fr" target-language="fr" datatype="plaintext" original="file.ext">
     <header>
       <tool tool-id="symfony" tool-name="Symfony"/>
     </header>
@@ -24,6 +24,58 @@
       <trans-unit id="4z7FOpH" resname="Email already used">
         <source>Email already used</source>
         <target>L'email est déjà utilisé</target>
+      </trans-unit>
+      <trans-unit id="pu40PjQ" resname="invalid token">
+        <source>invalid token</source>
+        <target>__invalid token</target>
+      </trans-unit>
+      <trans-unit id="ufG_uDh" resname="Passwords are different">
+        <source>Passwords are different</source>
+        <target>__Passwords are different</target>
+      </trans-unit>
+      <trans-unit id="dBoe0aG" resname="New password is empty">
+        <source>New password is empty</source>
+        <target>__New password is empty</target>
+      </trans-unit>
+      <trans-unit id="8eWHfHY" resname="password invalid">
+        <source>password invalid</source>
+        <target>__password invalid</target>
+      </trans-unit>
+      <trans-unit id="fyoxbwd" resname="Device token is empty">
+        <source>Device token is empty</source>
+        <target>__Device token is empty</target>
+      </trans-unit>
+      <trans-unit id="naWSLwm" resname="user no connected">
+        <source>user no connected</source>
+        <target>__user no connected</target>
+      </trans-unit>
+      <trans-unit id="qKOder4" resname="FCM Token is empty">
+        <source>FCM Token is empty</source>
+        <target>__FCM Token is empty</target>
+      </trans-unit>
+      <trans-unit id="SheT6ZA" resname="User not found">
+        <source>User not found</source>
+        <target>__User not found</target>
+      </trans-unit>
+      <trans-unit id="GKWmcNW" resname="version is empty">
+        <source>version is empty</source>
+        <target>__version is empty</target>
+      </trans-unit>
+      <trans-unit id="cr1K90e" resname="update required">
+        <source>update required</source>
+        <target>__update required</target>
+      </trans-unit>
+      <trans-unit id="ljJk07b" resname="The time limit for changing the password has elapsed">
+        <source>The time limit for changing the password has elapsed</source>
+        <target>__The time limit for changing the password has elapsed</target>
+      </trans-unit>
+      <trans-unit id="8j3TON7" resname="Token is empty">
+        <source>Token is empty</source>
+        <target>__Token is empty</target>
+      </trans-unit>
+      <trans-unit id="BvYyCOJ" resname="Link is wrong">
+        <source>Link is wrong</source>
+        <target>__Link is wrong</target>
       </trans-unit>
     </body>
   </file>
