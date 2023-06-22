@@ -1,8 +1,8 @@
 # InitApi
 
-![Logo](public/image//logo.png)
+![Logo](public/images//logo.png)
 
-_InitApi_ est une api en php utilisant le framework symfony qui fonctione avec le projet [initProject](https://github.com/hugoschellinger/InitProject). Vous trouverz en dessous la notice d'utilisation de cette api :
+_InitApi_ est une api php utilisant le framework Symfony qui fonctione avec le projet [initProject](https://github.com/hugoschellinger/InitProject). Vous trouverez en dessous le manuel d'utilisation de cette api :
 
 ## Installation
 
@@ -12,7 +12,7 @@ Voici les étapes pour installer ce projet :
 
 ### Changement des variables d'environnement
 
-Il faut commencer par changer les variables d'environnement situé dans le ficher ```.env``` : 
+Il faut commencer par changer les variables d'environnements situées dans le ficher `.env` : 
 
 MAIL_DSN : `"smtp://EMAIL:PASSWORD@SMTP_MAIL:SMTP_PORT"` [<sub>(Doc ici)</sub>](https://symfony.com/doc/current/mailer.html)
 
@@ -25,12 +25,12 @@ DOMAIN : `"http://DOMAIN:PORT"`
 
 ### Installation des dépendances
 
-Pour commencer, installer toute les dépendances dont l' api a besoin :
+Pour commencer, installer toutes les dépendances dont l' api a besoin :
 
 * Dépendances js
 > npm install
 
-* déendances php
+* dépendances php
 > composer install
 
 ### Création des schémas
@@ -45,7 +45,7 @@ Installer maintenant les entités :
 
 ### Changement du logo
 
-Vous pouvez ajouter le logo de votre application en remplaçant l'image `./public/images/logo.png` (Gardez le même non que l'ancienne image)
+Vous pouvez ajouter le logo de votre application en remplaçant l'image `./public/images/logo.png` (Gardez le même nom et le même chemin)
 
 ### Création des clées JWT
 
@@ -55,7 +55,7 @@ Générer de nouvelle clé JWT avec la commande :
 
 **ATTENTION :** Si la commande ne fonctionne pas, vous devez télécharger [openssl](https://www.openssl.org/) et suivre [ce poste](https://stackoverflow.com/questions/66252709/error-system-libraryfopenno-such-process)
 
-### Création des data fixture
+### Création des données mockées
 
 Vous pouvez créer des données mockées avec la commande : 
 
@@ -65,39 +65,39 @@ Par défaut, cette commande va créer un compte admin :
 * email : **admin**
 * mot de passe : **admin**
 
-### Configuration firebase
+### Configuration de Firebase
 
-Pour configurer firebase, il faut créer une application firebase sur [leur site](https://console.firebase.google.com/u/0/?_gl=1*7s66mq*_ga*OTI3NjI1NjYyLjE2Nzg5NTMwNTQ.*_ga_CW55HF8NVT*MTY4NzA4MzM1OC4xMC4wLjE2ODcwODMzNTguMC4wLjA.)
+Pour configurer Firebase, il faut créer une application firebase sur [leur site](https://console.firebase.google.com/u/0/?_gl=1*7s66mq*_ga*OTI3NjI1NjYyLjE2Nzg5NTMwNTQ.*_ga_CW55HF8NVT*MTY4NzA4MzM1OC4xMC4wLjE2ODcwODMzNTguMC4wLjA.)
 
-Copier coller le fichier `.env.local.dist` en `.env.local` et récupérer le token firebase de l'application pour le coller dans ce fichier.
+Copier coller le fichier `.env.local.dist` en `.env.local` et récupérer le token Firebase de l'application pour le coller dans ce fichier.
 
 ## Lancement du serveur
 
 Pour lancer le serveur, il suffit tous simplement d'utiliser l'outil de symfony en tapant :
 
-> symfony serve --no-tls
+> symfony serve `--no-tls`
 
-**ATTENTION :** Il est très important de rajouter le `--no-tls` lorsque'on utiliser l'api avec une application mobile car le tls ne fonctionne pas pour développer sur sur mobile en mode développement.
+**ATTENTION :** Il est très important de rajouter le `--no-tls` lorsque'on utiliser l'api avec une application mobile car le tls ne fonctionne pas pour développer sur mobile en mode développement.
 
 ## Valeurs ajoutées
 
-### Noticication firebase
+### Noticication Firebase
 
-L'api permet d'envoyer des notification push a tous les appareil de toute les utilisateurs de l'application. Pour cela, il faut utiliser la fonction `App\Service\FireBaseService::sendNotification`.
+L'api permet d'envoyer des notifications push a tous les appareils de tous les utilisateurs de l'application. Pour cela, il faut utiliser la fonction `App\Service\FireBaseService::sendNotification`.
 
 ### Création de mail
 
-On peut créer des mail grâce au générateur de template `Twig`. Les mails déjà existant se trouvent dans le dossier `templates/emails`.
+On peut créer des mails grâce au générateur de template `Twig`. Les mails déjà existants se trouvent dans le dossier `templates/emails`.
 
 ### Envoie de mail
 
-L'api permet d'envoyer des mails à n'importe quelle utilisateur. Pour cela, il faut utiliser la function `App\Service\MailService::sendCustomEmail` ou `App\Service\MailService::send` pour les mails pré-enregistrer.
+L'api permet d'envoyer des mails à n'importe quelle utilisateur. Pour cela, il faut utiliser la function `App\Service\MailService::sendCustomEmail` ou `App\Service\MailService::send` pour les mails pré-enregistré.
 
-Chaque mail est enregistrer à travers l'entité `App\Entity\Mail`.
+Chaque mail est enregistré à travers l'entité `App\Entity\Mail`.
 
 ### Système de traduction
 
-Un système de traduction est disponible sur l'api. Toutes les routes de l'api ont un préfix : `/api/{locale}`. Le mot `{locale}` peut prendre la valeur de n'impporte quelle langage disponible dans la configuration du package `translation.yaml`. Lorsque l'on veut écrire du text à renvoyer dans une réponse de requête, il faut utiliser le l'interface `Symfony\Contracts\Translation\TranslatorInterface` comme ceci :
+Un système de traduction est disponible sur l'api. Toutes les routes de l'api ont un préfix : `/api/{locale}`. Le mot `{locale}` peut prendre la valeur de n'importe quelle langage disponible dans la configuration du package `translation.yaml`. Lorsque l'on veut écrire du texte à renvoyer dans une réponse de requête, il faut utiliser le l'interface `Symfony\Contracts\Translation\TranslatorInterface` comme ceci :
 
 ```php
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -121,7 +121,7 @@ class SecurityController extends AbstractController
 
 Il faut maintenant traduire tous les chaînes de caractère que l'on donne au `TranslatorInterface`.
 
-Pour cela, il existe la commande suivante qui permet de voir les message non traduit dans un langage spécifique :
+Pour cela, il existe la commande suivante qui permet de voir les messages non traduits dans un langage spécifique :
 
 > php bin/console translation:extract --dump-messages `fr`
 
@@ -132,15 +132,15 @@ On peut alors taper la commande suivante pour importer toute les traductions :
 
 On peut ensuite modifier les traductions des différents langages dans le dossier `App\translation`(toutes les chaînes de caractère commençant par **__** sont à traduire).
 
-On peut aussi debuger toutes les traduction grace à la commande : 
+On peut aussi debugger toutes les traductions grâce à la commande : 
 
 > php bin/console debug:translation `fr`
 
-**INFORMATIONS :** La documentation est disponible [ici](https://symfony.com/doc/current/translation.html#the-translation-process) si jamais
+**INFORMATIONS :** Pour plus d'information, la documentation est disponible [ici](https://symfony.com/doc/current/translation.html#the-translation-process)
 
 ### Enregistrement des erreurs
 
-Chaque erreurs est enregistrer en base de donnée à l'aide du listener `App\EventListener\ExceptionListener`. Elle sont disponible dans l'entité `App\Entity\Exception`.
+Chaque erreur est enregistré en base de donnée à l'aide du listener `App\EventListener\ExceptionListener`. Elles sont disponible dans l'entité `App\Entity\Exception`.
 
 ## Structure
 
