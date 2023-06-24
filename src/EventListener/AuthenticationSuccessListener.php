@@ -13,12 +13,10 @@ class AuthenticationSuccessListener
 {
 
     private UserService $userService;
-    private TranslatorInterface $translator;
 
-    public function __construct(UserService $userService, TranslatorInterface $translator)
+    public function __construct(UserService $userService)
     {
         $this->userService = $userService;
-        $this->translator = $translator;
     }
 
 /**

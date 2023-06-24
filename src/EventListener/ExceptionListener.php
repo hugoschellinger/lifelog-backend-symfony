@@ -27,11 +27,14 @@ class ExceptionListener
             $response->setStatusCode($exception->getStatusCode());
             $response->headers->replace(["content-type"=>"application/json"]);
             $message = sprintf(json_encode(['message'=>$exception->getMessage(),'code'=>$exception->getStatusCode()]));
-            $exception= (new Exception())
-            ->setCode($exception->getStatusCode())
-            ->setMessage($exception->getMessage());
+            if($exception->getStatusCode() !== 404){
 
-            $this->exceptionService->save($exception);
+                $exception= (new Exception())
+                ->setCode($exception->getStatusCode())
+                ->setMessage($exception->getMessage());
+                
+                $this->exceptionService->save($exception);
+            }
         } else {
             $message = sprintf(json_encode(['message'=>$exception->getMessage(),'code'=>$exception->getCode()]));
             $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
