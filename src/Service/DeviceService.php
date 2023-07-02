@@ -20,6 +20,13 @@ class DeviceService extends AbstractService
         $this->userService = $userService;
     }
 
+    /**
+     * On Créer un Device si le FMC Token de l'utilisateur n'est pas trouvé
+     *
+     * @param [type] $token FCMToken
+     * @param User $user Utilisateur qui fait la requête
+     * @return void
+     */
     public function updateDevice($token, User $user){
         if(!$token){
             throw new BadRequestHttpException($this->translator->trans("FCM Token is empty"));

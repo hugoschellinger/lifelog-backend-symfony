@@ -32,6 +32,13 @@ class SecurityService
         $this->mailService = $mailService;
     }
 
+    /**
+     * Comparaison de la version envoyé par l'utilisateur et la version minimum requis
+     *
+     * @param [type] $actualVersion Version à vérifier
+     * @param [type] $currentVersion Version minimum requis
+     * @return void
+     */
     public function checkVersion($actualVersion, $currentVersion)
     {
         if (!$actualVersion) {
@@ -45,6 +52,15 @@ class SecurityService
         }
     }
 
+    /**
+     * Inscription d'un utilisateur
+     *
+     * @param [type] $email email de l'utilisateur
+     * @param [type] $password Mot de passe de l'utilisateur
+     * @param [type] $firstname Prénom de l'utilisateur
+     * @param [type] $lastname Nom de famille de l'utilisateur
+     * @return void
+     */
     public function register($email, $password, $firstname, $lastname)
     {
         $alreadyRegisted = $this->userService->findOneBy(["email" => $email]);
@@ -68,12 +84,26 @@ class SecurityService
         $this->userService->save($user, true);
     }
 
+    /**
+     * Envoie d'une mail d vérification d'email
+     *
+     * @param User $user Utilisateur à qui envoyer le mail
+     * @return void
+     */
     public function sendVerificationEmail(User $user){
         $user->setVerificationToken($this->tokenGenerator->generateToken());
 
         $this->mailService->send(EmailType::REGISTRATION, $user);
     }
 
+    /**
+     * Réinitialisation du mot de passe
+     *
+     * @param User $user Utilisateur qui veut réinitialiser son mot de passe
+     * @param [type] $newPassword Nouveau mot de passe
+     * @param [type] $passwordResetLimit Delais limite de validation du lien de réinitialisation
+     * @return void
+     */
     public function resetPassword(User $user, $newPassword, $passwordResetLimit)
     {
         //VERIFICATION PASSWORD_RESET_LIMIT
@@ -89,6 +119,12 @@ class SecurityService
         $this->userService->save($user);
     }
 
+    /**
+     * Demande de réinitialisation de mot de passe
+     *
+     * @param User $user Utilisateur qui veut réinitialiser son mot de passe
+     * @return void
+     */
     public function askResetpassword(User $user){
         $user->setPasswordToken($this->tokenGenerator->generateToken());
         $user->setResetAt(new DateTimeImmutable());

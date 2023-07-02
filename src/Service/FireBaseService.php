@@ -19,6 +19,14 @@ class FireBaseService{
         $this->deviceService=$deviceService;
     }
 
+    /**
+     * Envoie une notification a tous les devices des utilisateurs séléctionné
+     *
+     * @param User $user Utilisateur qui reçoit la notification
+     * @param string $title Titre de la notification
+     * @param string $content Contenu de la notification
+     * @return void
+     */
     public function sendNotification(User $user,string $title, string $content){
         foreach($user->getDevice() as $device){
             $chatMessage=new ChatMessage($content,new WebNotification($device->getToken(),["title"=>$title]));

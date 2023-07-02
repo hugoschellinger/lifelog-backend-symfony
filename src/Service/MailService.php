@@ -28,7 +28,13 @@ class MailService extends AbstractService
     }
 
     /**
-     * Custom Email
+     * Envoie d'un mail possédant un type (pas sûr)
+     *
+     * @param string $type type de l'email
+     * @param User $user Utilisateur qui reçoit le mail
+     * @param string $subject Sujet du mail
+     * @param string $template Template du mail
+     * @return void
      */
     public function sendCustomEmail(string $type, User $user, string $subject, string $template): void
     {
@@ -41,6 +47,13 @@ class MailService extends AbstractService
     }
 
 
+    /**
+     * Envoie d'un mail
+     *
+     * @param string $type Type de mail
+     * @param User $user Utilisateur qui reçoit le mail
+     * @return void
+     */
     public function send(string $type, User $user): void
     {
         $mail = (new Mail())
@@ -50,6 +63,15 @@ class MailService extends AbstractService
         $this->sendMail($mail, $this->MAIL_TYPE_INFO[$type]["subject"], $this->MAIL_TYPE_INFO[$type]["template"], ["user"=>$user]);
     }
 
+    /**
+     * Fonction qui envoie réellement le mail
+     *
+     * @param Mail $mail Entité mail 
+     * @param string $subject Sujet du mail
+     * @param string $template Template du mail
+     * @param array $context Context du mail
+     * @return void
+     */
     private function sendMail(Mail $mail, string $subject, string $template, array $context)
     {
         try {
