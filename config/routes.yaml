@@ -5,7 +5,7 @@ controllers:
         namespace: App\Controller
     type: attribute
 views:
-    prefix: ""
+    prefix: "/app"
     resource:
         path: ../src/Controller/Views/
         namespace: App\Controller\Views

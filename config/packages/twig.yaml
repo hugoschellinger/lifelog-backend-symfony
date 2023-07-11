@@ -2,6 +2,7 @@ twig:
     default_path: '%kernel.project_dir%/templates'
     globals:
         DOMAIN: '%env(resolve:DOMAIN)%'
+        APP_NAME: '%env(resolve:APP_NAME)%'
 
 when@test:
     twig:

@@ -22,6 +22,8 @@ JWT_PASSPHRASE : `"PASSPHRASE"`
 
 DOMAIN : `"http://DOMAIN:PORT"`
 
+APP_NAME : `"NOM DE L'APPLICATION"`
+
 
 ### Installation des dépendances
 

@@ -1,2 +1,25 @@
-<h1>Bienvenu {{user.firstname}}</h1>
-<a href="{{DOMAIN}}/api/{{ app.request.locale }}/user/verification?token={{user.verificationToken}}">Lien de vérification</a>
+{% extends "/emails/base.html.twig" %}
+
+{% block title %}Bienvenue sur {{APP_NAME}}
+{% endblock %}
+
+{% block content %}
+	<p>Bienvenue
+		{{user.firstname}}
+		{{user.lastname}},</p>
+	<p>Nous sommes heureux de vous compter parmis nous !</p>
+	<p>Votre compte a bien été crée. Veuillez cliquer sur le bouton ci-dessous pour valider votre adresse mail :</p>
+	<a href="{{DOMAIN}}/api/{{ app.request.locale }}/user/verification?token={{user.verificationToken}}">
+		<div style="background-color: #5269d1;
+                        font-weight : bold;
+				        border: none;
+				        color: white;
+				        padding: 10px 20px;
+				        text-align: center;
+				        text-decoration: none;
+				        display: inline-block;
+				        font-size: 16px;">
+			Vérifier mon compte
+		</div>
+	</a>
+{% endblock %}

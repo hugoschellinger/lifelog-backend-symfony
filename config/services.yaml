@@ -8,6 +8,7 @@ parameters:
     app.version: '%env(VERSION)%'
     app.mobile_version: '%env(MOBILE_VERSION)%'
     app.password_reset_limit: '%env(PASSWORD_RESET_LIMIT)%'
+    app.app_name: '%env(APP_NAME)%'
 
 services:
     # default configuration for services in *this* file
