@@ -10,21 +10,6 @@ Pour commencer, ce projet est fait pour être forker et utiliser comme base de t
 
 Voici les étapes pour installer ce projet :
 
-### Changement des variables d'environnement
-
-Il faut commencer par changer les variables d'environnements situées dans le ficher `.env` : 
-
-MAIL_DSN : `"smtp://EMAIL:PASSWORD@SMTP_MAIL:SMTP_PORT"` [<sub>(Doc ici)</sub>](https://symfony.com/doc/current/mailer.html)
-
-DATABASE_URL : `"mysql://root:@127.0.0.1:3306/DATABASE_NAME?serverVersion=5.7&charset=utf8mb4"`
-
-JWT_PASSPHRASE : `"PASSPHRASE"`
-
-DOMAIN : `"http://DOMAIN:PORT"`
-
-APP_NAME : `"NOM DE L'APPLICATION"`
-
-
 ### Installation des dépendances
 
 Pour commencer, installer toutes les dépendances dont l' api a besoin :
@@ -35,6 +20,21 @@ Pour commencer, installer toutes les dépendances dont l' api a besoin :
 * dépendances php
 > composer install
 
+### Changement des variables d'environnement
+
+Il faut commencer par copier le fichier `.env.local.dist` et le coller en le renommant `.env.local`.
+
+A l'intérieur de ce fichier, vous devez renseigner les variable demandé :
+
+FIREBASE_TOKEN = `TOKEN_FIREBASE` <sub>(à faire après)</sub>
+
+JWT_PASSPHRASE = `PASSPHRASE_DES _LEFS_JWT` <sub>(commande : `php bin/console app:genere-jwt-passphrase`)</sub>
+
+MAILER_DSN = `DSN_DU_MAILER`
+
+Ensuite, modifier les variable du fichier `.env` :
+
+APP_SECRET = `CODE_SECRET_DE_L'APPLICATION` <sub>(commande : `php bin/console app:genere-app-secret`)</sub>
 ### Création des schémas
 
 Il faut ensuite créer la base de donnée pour importer tous les entités que contient le projet :
@@ -71,7 +71,7 @@ Par défaut, cette commande va créer un compte admin :
 
 Pour configurer Firebase, il faut créer une application firebase sur [leur site](https://console.firebase.google.com/u/0/?_gl=1*7s66mq*_ga*OTI3NjI1NjYyLjE2Nzg5NTMwNTQ.*_ga_CW55HF8NVT*MTY4NzA4MzM1OC4xMC4wLjE2ODcwODMzNTguMC4wLjA.)
 
-Copier coller le fichier `.env.local.dist` en `.env.local` et récupérer le token Firebase de l'application pour le coller dans ce fichier.
+Ensuite, copier coller la clé de serveur de votre application Firebase dans la variable `FIREBASE_TOKEN` de votre `.env.local`.
 
 ## Lancement du serveur
 
