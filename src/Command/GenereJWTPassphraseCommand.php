@@ -11,22 +11,15 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'app:genere-new-random-string',
-    description: 'Génère un nouveau APP_SECRET dans le .env',
+    name: 'app:genere-jwt-passphrase',
+    description: 'Génère un nouveau secret pour JWT',
 )]
-class GenereNewRandomStringCommand extends Command
+class GenereJWTPassphraseCommand extends Command
 {
-    protected function configure(): void
-    {
-        $this
-            ->addArgument('lengthString', InputArgument::REQUIRED, 'length of string')
-        ;
-    }
-
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
         $io = new SymfonyStyle($input, $output);
-        $length = $input->getArgument('lengthString');
+        $length = 32;
 
         $a = '0123456789abcdef';
         $secret = '';
@@ -34,7 +27,7 @@ class GenereNewRandomStringCommand extends Command
             $secret .= $a[rand(0, 15)];
         }
 
-        $io->success('New random 32-bits string was generated: ' . $secret);
+        $io->success('New JWT passphrase was generated: ' . $secret);
 
         return 0;
     }
