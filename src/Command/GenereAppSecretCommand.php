@@ -9,10 +9,10 @@ use Symfony\Component\Console\Output\OutputInterface;
 use Symfony\Component\Console\Style\SymfonyStyle;
 
 #[AsCommand(
-    name: 'app:genere-jwt-passphrase',
-    description: 'Génère un nouveau secret pour JWT',
+    name: 'app:genere-app-secret',
+    description: 'Génère un nouveau secret pour l\'application',
 )]
-class GenereJWTPassphraseCommand extends Command
+class GenereAppSecretCommand extends Command
 {
     protected function execute(InputInterface $input, OutputInterface $output): int
     {
@@ -25,7 +25,7 @@ class GenereJWTPassphraseCommand extends Command
             $secret .= $a[rand(0, 15)];
         }
 
-        $io->success('New JWT passphrase was generated: ' . $secret);
+        $io->success('New App secret was generated: ' . $secret);
 
         return 0;
     }
