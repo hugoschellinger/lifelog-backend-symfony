@@ -34,6 +34,8 @@ MAILER_DSN = `DSN_DU_MAILER`
 
 Ensuite, modifier les variable du fichier `.env` :
 
+APP_NAME = `NOM_DE_L'APPLICATION`
+
 APP_SECRET = `CODE_SECRET_DE_L'APPLICATION` <sub>(commande : `php bin/console app:genere-app-secret`)</sub>
 ### Création des schémas
 
@@ -55,7 +57,9 @@ Générer de nouvelle clé JWT avec la commande :
 
 > php bin/console lexik:jwt:generate-keypair --overwrite
 
-**ATTENTION :** Si la commande ne fonctionne pas, vous devez télécharger [openssl](https://www.openssl.org/) et suivre [ce poste](https://stackoverflow.com/questions/66252709/error-system-libraryfopenno-such-process)
+***OU***
+
+**ATTENTION :** Si la commande ne fonctionne pas, vous devez télécharger [openssl](https://www.openssl.org/) et suivre [ce poste](https://stackoverflow.com/questions/66252709/error-system-libraryfopenno-such-process)(Prenez la réponse de `Zache Leto` et remplacer toutes les occurences de `app/var` par `config`)
 
 ### Création des données mockées
 
@@ -64,7 +68,7 @@ Vous pouvez créer des données mockées avec la commande :
 >php bin/console d:f:l --append
 
 Par défaut, cette commande va créer un compte admin :
-* email : **admin**
+* email : **admin@admin.fr**
 * mot de passe : **admin**
 
 ### Configuration de Firebase
