@@ -137,4 +137,24 @@ class SecurityController extends AbstractController
             return $this->json(["message" => "OK"], 204);
         }
     }
+
+    #[Route('/connect/google', name: 'connect_with_google', methods: ["POST"])]
+    public function connectWithGoogle(Request $request): Response
+    {
+        $email = $request->toArray()["email"] ?? null;
+        $googleIdToken = $request->toArray()["googleIdToken"] ?? null;
+        $firstname = $request->toArray()["firstname"] ?? null;
+        $lastname = $request->toArray()["lastname"] ?? null;
+
+        $alreadyUsed = $this->userService->findOneBy(["email" => $email]);
+
+        if($alreadyUsed){
+            $alreadyUsed->setGoogleIdToken($googleIdToken);
+            // $this->userService->save($alreadyUsed);
+            return $this->json($alreadyUsed, 200, [], ["groups" => ["User:read"]]);
+        }else{
+            $user = $this->securityService->registerWithGoogle($email, $googleIdToken, $firstname, $lastname);
+            return $this->json($user, 201, [], ["groups" => ["User:read"]]);
+        }
+    }
 }

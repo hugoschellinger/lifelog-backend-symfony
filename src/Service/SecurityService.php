@@ -55,13 +55,13 @@ class SecurityService
     /**
      * Inscription d'un utilisateur
      *
-     * @param [type] $email email de l'utilisateur
-     * @param [type] $password Mot de passe de l'utilisateur
-     * @param [type] $firstname Prénom de l'utilisateur
-     * @param [type] $lastname Nom de famille de l'utilisateur
-     * @return void
+     * @param string $email email de l'utilisateur
+     * @param string $password Mot de passe de l'utilisateur
+     * @param string $firstname Prénom de l'utilisateur
+     * @param string $lastname Nom de famille de l'utilisateur
+     * @return User
      */
-    public function register($email, $password, $firstname, $lastname)
+    public function register($email, $password, $firstname, $lastname): User
     {
         $alreadyRegisted = $this->userService->findOneBy(["email" => $email]);
 
@@ -82,6 +82,35 @@ class SecurityService
         $this->sendVerificationEmail($user);
 
         $this->userService->save($user, true);
+
+        return $user;
+    }
+
+    /**
+     * Connexion d'un utilisateur avec Google
+     *
+     * @param string $email Email de l'utilisateur
+     * @param string $googleIdToken Token d'identification Google
+     * @param string $firstname Prénom de l'utilisateur
+     * @param string $lastname Nom de famille de l'utilisateur
+     * @return User
+     */
+    function registerWithGoogle(string $email, string $googleIdToken, string $firstname, string $lastname):User
+    {
+        $alreadyRegisted = $this->userService->findOneBy(["email" => $email]);
+
+        if ($alreadyRegisted) {
+            throw new BadRequestHttpException($this->translator->trans("Email already used"));
+        }
+
+        $user = new User();
+        $user->setEmail($email);
+        $user->setFirstname($firstname);
+        $user->setLastname($lastname);
+        $user->setGoogleIdToken($googleIdToken);
+
+        // $this->userService->save($user, true);
+        return $user;
     }
 
     /**
