@@ -42,8 +42,15 @@ class SecurityController extends AbstractController
 
 
         return $this->json([
-            // 'user' => $user->getUserIdentifier(),
-            // 'token' => $token,
+            'user' => $user->getUserIdentifier(),
+            'token' => $token,
+        ]);
+    }
+
+    #[Route('/logout', name: 'api_logout')]
+    public function logout(): Response
+    {
+        return $this->json([
             'message' => "OK"
         ]);
     }
