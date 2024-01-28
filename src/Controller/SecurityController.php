@@ -12,6 +12,7 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -26,6 +27,25 @@ class SecurityController extends AbstractController
         $this->userService = $userService;
         $this->translator = $translator;
         $this->securityService = $securityService;
+    }
+
+    #[Route('/login', name: 'api_login', methods: ["POST"])]
+    public function login(
+        #[CurrentUser] ?User $user,
+    ): Response
+    {
+        if(null == $user){
+            return $this->json(["message" => "Invalid credentials"], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $token = "abc";
+
+
+        return $this->json([
+            // 'user' => $user->getUserIdentifier(),
+            // 'token' => $token,
+            'message' => "OK"
+        ]);
     }
 
     #[Route('/test', name: 'test', methods: ["GET"])]

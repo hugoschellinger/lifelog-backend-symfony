@@ -3,11 +3,11 @@
 namespace App\Service;
 
 use App\Entity\User;
+use App\Enum\EmailType;
 use App\Service\MailService;
 use App\Service\UserService;
 use DateInterval;
 use DateTimeImmutable;
-use EmailType;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\PreconditionFailedHttpException;
@@ -79,7 +79,7 @@ class SecurityService
         $user->setFirstname($firstname);
         $user->setLastname($lastname);
 
-        $this->sendVerificationEmail($user);
+        // $this->sendVerificationEmail($user);
 
         $this->userService->save($user, true);
 
