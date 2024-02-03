@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Service\FireBaseService;
 use App\Service\UserService;
 use App\Service\SecurityService;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
@@ -29,13 +30,11 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/test', name: 'test', methods: ["GET"])]
-    public function test(FireBaseService $FireBaseService): Response
+    public function test(JWTTokenManagerInterface $JWTManager): Response
     {
-        /** @var User */
-        $user = $this->userService->findOneBy(["id" => $this->getUser()]);
-        $FireBaseService->sendNotification($user, "heyy", "heyyyyyyyy");
+        $user = $this->userService->find(1);
 
-        return $this->json("OK", 200);
+        return $this->json(['token' => $JWTManager->create($user)]);
     }
 
     #[Route('/checkEmail', name: 'check_email', methods: ["POST"])]
