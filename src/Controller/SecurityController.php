@@ -14,6 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
+use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SecurityController extends AbstractController
@@ -21,12 +22,14 @@ class SecurityController extends AbstractController
     private UserService $userService;
     private TranslatorInterface $translator;
     private SecurityService $securityService;
+    private NormalizerInterface $normalizer;
 
-    public function __construct(UserService $userService, TranslatorInterface $translator, SecurityService $securityService)
+    public function __construct(UserService $userService, TranslatorInterface $translator, SecurityService $securityService, NormalizerInterface $normalizer)
     {
         $this->userService = $userService;
         $this->translator = $translator;
         $this->securityService = $securityService;
+        $this->normalizer = $normalizer;
     }
 
     #[Route('/test', name: 'test', methods: ["GET"])]
@@ -68,15 +71,15 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/whoami', name: 'whoami', methods: ["GET"])]
-    public function whoami(NormalizerInterface $normalizer): Response
+    public function whoami(): Response
     {
         /** @var User */
         $user = $this->userService->findOneBy(["email" => $this->getUser()->getUserIdentifier()]);
-        return $this->json([...$normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]);
+        return $this->json([...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]);
     }
 
     #[Route('/register', name: 'register', methods: ["POST"])]
-    public function registration(Request $request, )
+    public function registration(Request $request)
     {
         $email = $request->toArray()["email"];
         $password = $request->toArray()["password"];
@@ -138,22 +141,23 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/connect/google', name: 'connect_with_google', methods: ["POST"])]
-    public function connectWithGoogle(Request $request): Response
+    public function connectWithGoogle(Request $request, JWTTokenManagerInterface $JWTManager): Response
     {
         $email = $request->toArray()["email"] ?? null;
         $googleIdToken = $request->toArray()["googleIdToken"] ?? null;
         $firstname = $request->toArray()["firstname"] ?? null;
         $lastname = $request->toArray()["lastname"] ?? null;
 
-        $alreadyUsed = $this->userService->findOneBy(["email" => $email]);
+        $user = $this->userService->findOneBy(["email" => $email]);
 
-        if($alreadyUsed){
-            $alreadyUsed->setGoogleIdToken($googleIdToken);
+        if($user){
+            $user->setGoogleIdToken($googleIdToken);
             // $this->userService->save($alreadyUsed);
-            return $this->json($alreadyUsed, 200, [], ["groups" => ["User:read"]]);
+
+            return $this->json(["token" => $JWTManager->create($user), "data" => [...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]]);
         }else{
             $user = $this->securityService->registerWithGoogle($email, $googleIdToken, $firstname, $lastname);
-            return $this->json($user, 201, [], ["groups" => ["User:read"]]);
+            return $this->json(["token" => $JWTManager->create($user), "data" => [...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]], 201);
         }
     }
 }
