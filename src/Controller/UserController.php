@@ -71,9 +71,9 @@ class UserController extends CrudAbstractController{
 
         $deviceToken= $request->toArray()["device"] ?? null;
 
-        if(!$deviceToken){
-            throw new BadRequestHttpException($this->translator->trans("Device token is empty"));
-        }
+        // if(!$deviceToken){
+        //     throw new BadRequestHttpException($this->translator->trans("Device token is empty"));
+        // }
 
         /** @var User */
         $user = $this->userService->findOneBy(["id" => $this->getUser()]);
