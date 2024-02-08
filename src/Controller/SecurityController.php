@@ -15,7 +15,6 @@ use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
-use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SecurityController extends AbstractController
@@ -73,7 +72,7 @@ class SecurityController extends AbstractController
         $email = $request->toArray()["email"] ?? null;
 
         if(!$email){
-            throw new BadRequestException($this->translator->trans("Email is empty"));
+            throw new BadRequestHttpException($this->translator->trans("Email is empty"));
         }
 
         /** @var User */
