@@ -29,12 +29,13 @@ class UserController extends CrudAbstractController{
         $this->deviceService=$deviceService;
     }
 
-    #[Route('/verification', name: 'verification_email', methods:["GET"])]
+    #[Route('/verification', name: 'verification_email', methods:["POST"])]
     public function verificationEmail(Request $request): Response
     {
-        $token=$request->get("token") ?? null;
+        $code=$request->toArray()["code"] ?? null;
+        $email=$request->toArray()["email"] ?? null;
 
-        $this->userService->verificationEmail($token);
+        $this->userService->verificationEmail($email, $code);
 
         return $this->json(["message"=>"OK"],200);
     }
@@ -71,9 +72,9 @@ class UserController extends CrudAbstractController{
 
         $deviceToken= $request->toArray()["device"] ?? null;
 
-        if(!$deviceToken){
-            throw new BadRequestHttpException($this->translator->trans("Device token is empty"));
-        }
+        // if(!$deviceToken){
+        //     throw new BadRequestHttpException($this->translator->trans("Device token is empty"));
+        // }
 
         /** @var User */
         $user = $this->userService->findOneBy(["id" => $this->getUser()]);
