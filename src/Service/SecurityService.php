@@ -17,19 +17,17 @@ use Symfony\Contracts\Translation\TranslatorInterface;
 
 class SecurityService
 {
-    private TranslatorInterface $translator;
-    private UserService $userService;
-    private UserPasswordHasherInterface $passwordHasher;
-    private TokenGeneratorInterface $tokenGenerator;
-    private MailService $mailService;
 
-    public function __construct(TranslatorInterface $translator, UserService $userService, UserPasswordHasherInterface $passwordHasher, TokenGeneratorInterface $tokenGenerator, MailService $mailService)
+
+    public function __construct(
+        private TranslatorInterface $translator,
+        private UserService $userService,
+        private UserPasswordHasherInterface $passwordHasher,
+        private TokenGeneratorInterface $tokenGenerator,
+        private MailService $mailService,
+        private HelperService $helperService
+    )
     {
-        $this->translator = $translator;
-        $this->userService = $userService;
-        $this->passwordHasher = $passwordHasher;
-        $this->tokenGenerator = $tokenGenerator;
-        $this->mailService = $mailService;
     }
 
     /**
@@ -120,7 +118,7 @@ class SecurityService
      * @return void
      */
     public function sendVerificationEmail(User $user){
-        $user->setVerificationToken($this->tokenGenerator->generateToken());
+        $user->setVerificationToken($this->helperService->genereToken(4,true));
 
         $this->mailService->send(EmailType::REGISTRATION, $user);
     }

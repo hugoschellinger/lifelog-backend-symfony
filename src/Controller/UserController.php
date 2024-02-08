@@ -29,12 +29,13 @@ class UserController extends CrudAbstractController{
         $this->deviceService=$deviceService;
     }
 
-    #[Route('/verification', name: 'verification_email', methods:["GET"])]
+    #[Route('/verification', name: 'verification_email', methods:["POST"])]
     public function verificationEmail(Request $request): Response
     {
-        $token=$request->get("token") ?? null;
+        $code=$request->toArray()["code"] ?? null;
+        $email=$request->toArray()["email"] ?? null;
 
-        $this->userService->verificationEmail($token);
+        $this->userService->verificationEmail($email, $code);
 
         return $this->json(["message"=>"OK"],200);
     }

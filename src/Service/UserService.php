@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Repository\UserRepository;
+use Exception;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -17,16 +18,19 @@ class UserService extends AbstractService
         $this->translator=$translator;
     }
 
-    public function verificationEmail($token){
-        if(!$token){
-            throw new BadRequestHttpException($this->translator->trans("Token is empty"));
+    public function verificationEmail($email, $code){
+        if(!$code){
+            throw new BadRequestHttpException("Token is empty");
+        }
+        if(!$email){
+            throw new BadRequestHttpException("Email is empty");
         }
 
         /** @var User */
-        $user = $this->findOneBy(["verificationToken" => $token]);
+        $user = $this->findOneBy(["verificationToken" => $code, "email" => $email]);
 
         if(!$user){
-            throw new BadRequestHttpException($this->translator->trans("Link is wrong"));
+            throw new BadRequestHttpException("code or email is wrong");
         }
 
         $user->setVerificationToken(null);

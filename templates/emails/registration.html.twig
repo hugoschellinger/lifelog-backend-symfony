@@ -8,18 +8,7 @@
 		{{user.firstname}}
 		{{user.lastname}},</p>
 	<p>Nous sommes heureux de vous compter parmis nous !</p>
-	<p>Votre compte a bien été crée. Veuillez cliquer sur le bouton ci-dessous pour valider votre adresse mail :</p>
-	<a href="{{DOMAIN}}/api/{{ app.request.locale }}/user/verification?token={{user.verificationToken}}">
-		<div style="background-color: #5269d1;
-                        font-weight : bold;
-				        border: none;
-				        color: white;
-				        padding: 10px 20px;
-				        text-align: center;
-				        text-decoration: none;
-				        display: inline-block;
-				        font-size: 16px;">
-			Vérifier mon compte
-		</div>
+	<p>Votre compte a bien été crée. Veuillez entrez le code ci-dessous dans l'aplication pour valider votre adresse email :</p>
+	<p>{{user.verificationToken}}</p>
 	</a>
 {% endblock %}
