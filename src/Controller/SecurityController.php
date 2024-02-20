@@ -178,11 +178,32 @@ class SecurityController extends AbstractController
 
         if($user){
             $user->setGoogleIdToken($googleIdToken);
-            // $this->userService->save($alreadyUsed);
+            $this->userService->save($user);
 
             return $this->json(["token" => $JWTManager->create($user), "data" => [...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]]);
         }else{
             $user = $this->securityService->registerWithGoogle($email, $googleIdToken, $firstname, $lastname);
+            return $this->json(["token" => $JWTManager->create($user), "data" => [...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]], 201);
+        }
+    }
+
+    #[Route('/connect/apple', name: 'connect_with_apple', methods: ["POST"])]
+    public function connectWithApple(Request $request, JWTTokenManagerInterface $JWTManager): Response
+    {
+        $email = $request->toArray()["email"] ?? null;
+        $identityToken = $request->toArray()["identityToken"] ?? null;
+        $givenName = $request->toArray()["givenName"] ?? null;
+        $familyName = $request->toArray()["familyName"] ?? null;
+
+        $user = $this->userService->findOneBy(["email" => $email]);
+
+        if($user){
+            $user->setGoogleIdToken($identityToken);
+            // $this->userService->save($alreadyUsed);
+
+            return $this->json(["token" => $JWTManager->create($user), "data" => [...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]]);
+        }else{
+            $user = $this->securityService->registerWithApple($email, $identityToken, $givenName, $familyName);
             return $this->json(["token" => $JWTManager->create($user), "data" => [...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]], 201);
         }
     }

@@ -65,6 +65,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(type: Types::TEXT, nullable: true)]
     private ?string $googleIdToken = null;
 
+    #[ORM\Column(type: Types::TEXT, nullable: true)]
+    private ?string $AppleIdentifyToken = null;
+
     public function __construct()
     {
         $this->lastConnexion=new DateTimeImmutable();
@@ -264,6 +267,18 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setGoogleIdToken(?string $googleIdToken): self
     {
         $this->googleIdToken = $googleIdToken;
+
+        return $this;
+    }
+
+    public function getAppleIdentifyToken(): ?string
+    {
+        return $this->AppleIdentifyToken;
+    }
+
+    public function setAppleIdentifyToken(?string $AppleIdentifyToken): static
+    {
+        $this->AppleIdentifyToken = $AppleIdentifyToken;
 
         return $this;
     }

@@ -107,7 +107,34 @@ class SecurityService
         $user->setLastname($lastname);
         $user->setGoogleIdToken($googleIdToken);
 
-        // $this->userService->save($user, true);
+        $this->userService->save($user, true);
+        return $user;
+    }
+
+        /**
+     * Connexion d'un utilisateur avec Apple
+     *
+     * @param string $email Email de l'utilisateur
+     * @param string $identityToken Token d'identification Apple
+     * @param string $givenName Prénom de l'utilisateur
+     * @param string $familyName Nom de famille de l'utilisateur
+     * @return User
+     */
+    function registerWithApple(string $email, string $identityToken, string $givenName, string $familyName):User
+    {
+        $alreadyRegisted = $this->userService->findOneBy(["email" => $email]);
+
+        if ($alreadyRegisted) {
+            throw new BadRequestHttpException($this->translator->trans("Email already used"));
+        }
+
+        $user = new User();
+        $user->setEmail($email);
+        $user->setFirstname($givenName);
+        $user->setLastname($familyName);
+        $user->setAppleIdentifyToken($identityToken);
+
+        $this->userService->save($user, true);
         return $user;
     }
 
