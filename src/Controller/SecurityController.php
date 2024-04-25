@@ -195,11 +195,11 @@ class SecurityController extends AbstractController
         $givenName = $request->toArray()["givenName"] ?? null;
         $familyName = $request->toArray()["familyName"] ?? null;
 
-        $user = $this->userService->findOneBy(["email" => $email]);
+        $user = $this->userService->findOneBy(["appleIdentifyToken" => $identityToken]);
 
         if($user){
             $user->setGoogleIdToken($identityToken);
-            // $this->userService->save($alreadyUsed);
+            $this->userService->save($user);
 
             return $this->json(["token" => $JWTManager->create($user), "data" => [...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]]);
         }else{

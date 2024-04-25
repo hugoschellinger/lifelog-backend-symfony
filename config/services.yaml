@@ -9,6 +9,7 @@ parameters:
     app.mobile_version: '%env(MOBILE_VERSION)%'
     app.password_reset_limit: '%env(PASSWORD_RESET_LIMIT)%'
     app.app_name: '%env(APP_NAME)%'
+    app.app_env: '%env(APP_ENV)%'
 
 services:
     # default configuration for services in *this* file
@@ -27,7 +28,7 @@ services:
             - '../src/DependencyInjection/'
             - '../src/Entity/'
             - '../src/Kernel.php'
-    App\EventListener\ExceptionListener:
+    App\EventSubscriber\ExceptionSubscriber:
         tags: 
             - {name: kernel.event_listener, event: kernel.exception}
     # add more service definitions when explicit configuration is needed

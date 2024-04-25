@@ -66,7 +66,7 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     private ?string $googleIdToken = null;
 
     #[ORM\Column(type: Types::TEXT, nullable: true)]
-    private ?string $AppleIdentifyToken = null;
+    private ?string $appleIdentifyToken = null;
 
     public function __construct()
     {
@@ -273,12 +273,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
 
     public function getAppleIdentifyToken(): ?string
     {
-        return $this->AppleIdentifyToken;
+        return $this->appleIdentifyToken;
     }
 
-    public function setAppleIdentifyToken(?string $AppleIdentifyToken): static
+    public function setAppleIdentifyToken(?string $appleIdentifyToken): static
     {
-        $this->AppleIdentifyToken = $AppleIdentifyToken;
+        $this->appleIdentifyToken = $appleIdentifyToken;
 
         return $this;
     }
