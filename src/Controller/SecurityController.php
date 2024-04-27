@@ -178,9 +178,6 @@ class SecurityController extends AbstractController
         $user = $this->userService->findOneBy(["email" => $email]);
 
         if($user){
-            $user->setGoogleIdToken($googleIdToken);
-            $this->userService->save($user);
-
             return $this->json(["token" => $JWTManager->create($user), "data" => [...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]]);
         }else{
             $user = $this->securityService->registerWithGoogle($email, $googleIdToken, $firstname, $lastname);
@@ -199,9 +196,6 @@ class SecurityController extends AbstractController
         $user = $this->userService->findOneBy(["email" => $email]);
 
         if($user){
-            $user->setGoogleIdToken($identityToken);
-            $this->userService->save($user);
-
             return $this->json(["token" => $JWTManager->create($user), "data" => [...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]]);
         }else{
             $user = $this->securityService->registerWithApple($email, $identityToken, $givenName, $familyName);
