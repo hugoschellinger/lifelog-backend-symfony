@@ -6,6 +6,7 @@ use App\Entity\User;
 use App\Service\FireBaseService;
 use App\Service\UserService;
 use App\Service\SecurityService;
+use Firebase\JWT\JWT;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -195,7 +196,7 @@ class SecurityController extends AbstractController
         $givenName = $request->toArray()["givenName"] ?? null;
         $familyName = $request->toArray()["familyName"] ?? null;
 
-        $user = $this->userService->findOneBy(["appleIdentifyToken" => $identityToken]);
+        $user = $this->userService->findOneBy(["email" => $email]);
 
         if($user){
             $user->setGoogleIdToken($identityToken);
