@@ -6,7 +6,6 @@ use App\Entity\User;
 use App\Service\FireBaseService;
 use App\Service\UserService;
 use App\Service\SecurityService;
-use Firebase\JWT\JWT;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
@@ -173,16 +172,16 @@ class SecurityController extends AbstractController
     public function connectWithGoogle(Request $request, JWTTokenManagerInterface $JWTManager): Response
     {
         $email = $request->toArray()["email"] ?? null;
-        $googleIdToken = $request->toArray()["googleIdToken"] ?? null;
+        $googleUID = $request->toArray()["googleUID"] ?? null;
         $firstname = $request->toArray()["firstname"] ?? null;
         $lastname = $request->toArray()["lastname"] ?? null;
 
-        $user = $this->userService->findOneBy(["email" => $email]);
+        $user = $this->userService->findOneBy(["email" => $email, "googleUID" => $googleUID]);
 
         if($user){
             return $this->json(["token" => $JWTManager->create($user), "data" => [...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]]);
         }else{
-            $user = $this->securityService->registerWithGoogle($email, $googleIdToken, $firstname, $lastname);
+            $user = $this->securityService->registerWithGoogle($email, $googleUID, $firstname, $lastname);
             return $this->json(["token" => $JWTManager->create($user), "data" => [...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]], 201);
         }
     }
@@ -191,16 +190,16 @@ class SecurityController extends AbstractController
     public function connectWithApple(Request $request, JWTTokenManagerInterface $JWTManager): Response
     {
         $email = $request->toArray()["email"] ?? null;
-        $identityToken = $request->toArray()["identityToken"] ?? null;
+        $appleUID = $request->toArray()["appleUID"] ?? null;
         $givenName = $request->toArray()["givenName"] ?? null;
         $familyName = $request->toArray()["familyName"] ?? null;
 
-        $user = $this->userService->findOneBy(["email" => $email]);
+        $user = $this->userService->findOneBy(["email" => $email, "appleUID" => $appleUID]);
 
         if($user){
             return $this->json(["token" => $JWTManager->create($user), "data" => [...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]]);
         }else{
-            $user = $this->securityService->registerWithApple($email, $identityToken, $givenName, $familyName);
+            $user = $this->securityService->registerWithApple($email, $appleUID, $givenName, $familyName);
             return $this->json(["token" => $JWTManager->create($user), "data" => [...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]], 201);
         }
     }
