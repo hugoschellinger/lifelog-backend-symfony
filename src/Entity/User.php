@@ -62,6 +62,12 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
 
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $appleUID = null;
+
+    #[ORM\Column(length: 255, nullable: true)]
+    private ?string $googleUID = null;
+
     public function __construct()
     {
         $this->lastConnexion=new DateTimeImmutable();
@@ -249,6 +255,30 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
+
+        return $this;
+    }
+
+    public function getAppleUID(): ?string
+    {
+        return $this->appleUID;
+    }
+
+    public function setAppleUID(?string $appleUID): static
+    {
+        $this->appleUID = $appleUID;
+
+        return $this;
+    }
+
+    public function getGoogleUID(): ?string
+    {
+        return $this->googleUID;
+    }
+
+    public function setGoogleUID(?string $googleUID): static
+    {
+        $this->googleUID = $googleUID;
 
         return $this;
     }

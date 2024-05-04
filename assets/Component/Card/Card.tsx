@@ -1,9 +1,9 @@
-import React from "react";
+import React, { ReactElement } from "react";
 import style from "./Card.module.scss";
 
 interface IProps extends React.DetailedHTMLProps<React.HTMLAttributes<HTMLDivElement>, HTMLDivElement>
 {
-    children : JSX.Element;
+    children : ReactElement;
     title?:string;
 }
 

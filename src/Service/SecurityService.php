@@ -88,12 +88,12 @@ class SecurityService
      * Connexion d'un utilisateur avec Google
      *
      * @param string $email Email de l'utilisateur
-     * @param string $googleIdToken Token d'identification Google
+     * @param string $googleUID Token UID Google
      * @param string $firstname Prénom de l'utilisateur
      * @param string $lastname Nom de famille de l'utilisateur
      * @return User
      */
-    function registerWithGoogle(string $email, string $googleIdToken, string $firstname, string $lastname):User
+    function registerWithGoogle(string $email, string $googleUID, string $firstname, string $lastname):User
     {
         $alreadyRegisted = $this->userService->findOneBy(["email" => $email]);
 
@@ -105,7 +105,7 @@ class SecurityService
         $user->setEmail($email);
         $user->setFirstname($firstname);
         $user->setLastname($lastname);
-        $user->setGoogleIdToken($googleIdToken);
+        $user->setGoogleUID($googleUID);
 
         $this->userService->save($user, true);
         return $user;
@@ -115,12 +115,12 @@ class SecurityService
      * Connexion d'un utilisateur avec Apple
      *
      * @param string $email Email de l'utilisateur
-     * @param string $identityToken Token d'identification Apple
+     * @param string $appleUID Token UID Apple
      * @param string $givenName Prénom de l'utilisateur
      * @param string $familyName Nom de famille de l'utilisateur
      * @return User
      */
-    function registerWithApple(string $email, string $identityToken, string $givenName, string $familyName):User
+    function registerWithApple(string $email, string $appleUID, string $givenName, string $familyName):User
     {
         $alreadyRegisted = $this->userService->findOneBy(["email" => $email]);
 
@@ -132,7 +132,7 @@ class SecurityService
         $user->setEmail($email);
         $user->setFirstname($givenName);
         $user->setLastname($familyName);
-        $user->setAppleIdentifyToken($identityToken);
+        $user->setAppleUID($appleUID);
 
         $this->userService->save($user, true);
         return $user;
