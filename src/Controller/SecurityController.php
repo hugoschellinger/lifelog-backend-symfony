@@ -33,6 +33,16 @@ class SecurityController extends AbstractController
         $this->normalizer = $normalizer;
     }
 
+    #[Route('/test', name: 'test', methods: ["POST"])]
+    public function test(UserService $userService, FireBaseService $FireBaseService): Response
+    {
+        /** @var User */
+        $user=$userService->findOneBy(["id"=>$this->getUser()]);
+        $FireBaseService->sendNotification($user,"heyy","heyyyyyyyy");
+
+        return $this->json("OK", 200);
+    }
+
     #[Route('/login', name: 'api_login', methods: ["POST"])]
     public function login(
         #[CurrentUser] ?User $user,
@@ -57,14 +67,6 @@ class SecurityController extends AbstractController
         return $this->json([
             'message' => "OK"
         ]);
-    }
-
-    #[Route('/test', name: 'test', methods: ["GET"])]
-    public function test(JWTTokenManagerInterface $JWTManager): Response
-    {
-        $user = $this->userService->find(1);
-
-        return $this->json(['token' => $JWTManager->create($user)]);
     }
 
     #[Route('/checkEmail', name: 'check_email', methods: ["POST"])]

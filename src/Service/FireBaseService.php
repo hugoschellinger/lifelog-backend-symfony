@@ -3,6 +3,7 @@
 namespace App\Service;
 
 use App\Entity\User;
+use Symfony\Component\HttpClient\Exception\TransportException;
 use Symfony\Component\Notifier\Bridge\Firebase\Notification\WebNotification;
 use Symfony\Component\Notifier\ChatterInterface;
 use Symfony\Component\Notifier\Message\ChatMessage;
@@ -36,6 +37,7 @@ class FireBaseService{
                 $this->chatter->send($message);
             }catch(TransportExceptionInterface $e){
                 $this->deviceService->delete($device);
+                throw new TransportException("Erreur lors de l'envoie de la notification : ".$e->getMessage());
             }
         }
     }
