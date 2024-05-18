@@ -4,6 +4,7 @@ namespace App\Entity;
 
 use App\Repository\ExceptionRepository;
 use Doctrine\ORM\Mapping as ORM;
+use Doctrine\DBAL\Types\Types;
 
 #[ORM\Entity(repositoryClass: ExceptionRepository::class)]
 class Exception
@@ -49,9 +50,9 @@ class Exception
         return $this->message;
     }
 
-    public function setMessage(string $message): self
+    public function setMessage(string $message): static
     {
-        $this->message = $message;
+        $this->message = substr($message,0,255);
 
         return $this;
     }

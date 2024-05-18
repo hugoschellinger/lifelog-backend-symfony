@@ -180,10 +180,14 @@ class SecurityService
      * @return void
      */
     public function askResetpassword(User $user){
-        $user->setPasswordToken($this->tokenGenerator->generateToken());
-        $user->setResetAt(new DateTimeImmutable());
-
-        $this->userService->save($user);
-        $this->mailService->send(EmailType::FORGOT_PASSWORD, $user);
+        try {
+            $this->mailService->send(EmailType::FORGOT_PASSWORD, $user);
+            $user->setPasswordToken($this->tokenGenerator->generateToken());
+            $user->setResetAt(new DateTimeImmutable());
+    
+            $this->userService->save($user);
+        } catch (\Exception $e) {
+            throw new BadRequestHttpException("L'envoi du mail a échoué");
+        }
     }
 }

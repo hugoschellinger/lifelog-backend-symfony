@@ -85,7 +85,7 @@ class MailService extends AbstractService
             $this->mailer->send($email);
         } catch (TransportExceptionInterface $e) {
             $mail->setIsSended(false);
-            throw new ServiceUnavailableHttpException(null,"L'envoi du mail a échoué");
+            throw new ServiceUnavailableHttpException(null,$e->getMessage());
         }finally{
             $this->save($mail);
         }
