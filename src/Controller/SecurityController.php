@@ -103,7 +103,7 @@ class SecurityController extends AbstractController
     {
         /** @var User */
         $user = $this->userService->findOneBy(["email" => $this->getUser()->getUserIdentifier()]);
-        return $this->json([...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]);
+        return $this->json($this->normalizer->normalize($user,"json",["groups" => ["User:read"]]));
     }
 
     #[Route('/register', name: 'register', methods: ["POST"])]
@@ -179,10 +179,10 @@ class SecurityController extends AbstractController
         $user = $this->userService->findOneBy(["email" => $email, "googleUID" => $googleUID]);
 
         if($user){
-            return $this->json(["token" => $JWTManager->create($user), "data" => [...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]]);
+            return $this->json(["token" => $JWTManager->create($user), "data" => $this->normalizer->normalize($user,"json",["groups" => ["User:read"]])]);
         }else{
             $user = $this->securityService->registerWithGoogle($email, $googleUID, $firstname, $lastname);
-            return $this->json(["token" => $JWTManager->create($user), "data" => [...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]], 201);
+            return $this->json(["token" => $JWTManager->create($user), "data" => $this->normalizer->normalize($user,"json",["groups" => ["User:read"]])], 201);
         }
     }
 
@@ -197,10 +197,10 @@ class SecurityController extends AbstractController
         $user = $this->userService->findOneBy(["email" => $email, "appleUID" => $appleUID]);
 
         if($user){
-            return $this->json(["token" => $JWTManager->create($user), "data" => [...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]]);
+            return $this->json(["token" => $JWTManager->create($user), "data" => $this->normalizer->normalize($user,"json",["groups" => ["User:read"]])]);
         }else{
             $user = $this->securityService->registerWithApple($email, $appleUID, $givenName, $familyName);
-            return $this->json(["token" => $JWTManager->create($user), "data" => [...$this->normalizer->normalize($user,"json",["groups" => ["User:read"]]),"isVerified" => $user->getVerificationToken() ? false: true]], 201);
+            return $this->json(["token" => $JWTManager->create($user), "data" => $this->normalizer->normalize($user,"json",["groups" => ["User:read"]])], 201);
         }
     }
 }

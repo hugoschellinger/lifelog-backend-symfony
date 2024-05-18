@@ -68,6 +68,9 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(length: 255, nullable: true)]
     private ?string $googleUID = null;
 
+    #[Groups(["User:read"])]
+    private ?bool $isVerified = null;
+
     public function __construct()
     {
         $this->lastConnexion=new DateTimeImmutable();
@@ -281,5 +284,10 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         $this->googleUID = $googleUID;
 
         return $this;
+    }
+
+    public function getIsVerified(): ?bool
+    {
+        return !$this->verificationToken;
     }
 }

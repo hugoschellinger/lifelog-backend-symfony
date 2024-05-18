@@ -77,9 +77,9 @@ class SecurityService
         $user->setFirstname($firstname);
         $user->setLastname($lastname);
 
-        // $this->sendVerificationEmail($user);
+        $this->sendVerificationEmail($user);
 
-        $this->userService->save($user, true);
+        $this->userService->save($user);
 
         return $user;
     }
@@ -111,7 +111,7 @@ class SecurityService
         return $user;
     }
 
-        /**
+    /**
      * Connexion d'un utilisateur avec Apple
      *
      * @param string $email Email de l'utilisateur

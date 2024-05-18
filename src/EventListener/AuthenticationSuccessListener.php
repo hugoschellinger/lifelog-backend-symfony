@@ -40,7 +40,7 @@ public function onAuthenticationSuccessResponse(AuthenticationSuccessEvent $even
         'email' => $user->getEmail(),
         'lastname' => $user->getLastname(),
         'firstname' => $user->getFirstname(),
-        'isVerified' => $user->getVerificationToken() ? false : true,
+        'isVerified' => $user->getIsVerified(),
     );
 
     $event->setData($data);
