@@ -181,8 +181,8 @@ class SecurityService
      */
     public function askResetpassword(User $user){
         try {
+            $user = $user->setPasswordToken($this->tokenGenerator->generateToken());
             $this->mailService->send(EmailType::FORGOT_PASSWORD, $user);
-            $user->setPasswordToken($this->tokenGenerator->generateToken());
             $user->setResetAt(new DateTimeImmutable());
     
             $this->userService->save($user);

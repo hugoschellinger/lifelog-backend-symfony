@@ -99,10 +99,8 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/whoami', name: 'whoami', methods: ["GET"])]
-    public function whoami(): Response
+    public function whoami(#[CurrentUser()]User $user): Response
     {
-        /** @var User */
-        $user = $this->userService->findOneBy(["email" => $this->getUser()->getUserIdentifier()]);
         return $this->json($this->normalizer->normalize($user,"json",["groups" => ["User:read"]]));
     }
 
@@ -164,7 +162,7 @@ class SecurityController extends AbstractController
                 $this->securityService->askResetpassword($user);
             }
 
-            return $this->json(["message" => "OK"], 204);
+            return $this->json(["message" => "OK"], 200);
         }
     }
 
