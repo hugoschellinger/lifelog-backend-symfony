@@ -174,7 +174,7 @@ class SecurityController extends AbstractController
         $firstname = $request->toArray()["firstname"] ?? null;
         $lastname = $request->toArray()["lastname"] ?? null;
 
-        $user = $this->userService->findOneBy(["email" => $email, "googleUID" => $googleUID]);
+        $user = $this->userService->findUserForGoogleConnection($email, $googleUID);
 
         if($user){
             return $this->json(["token" => $JWTManager->create($user), "data" => $this->normalizer->normalize($user,"json",["groups" => ["User:read"]])]);

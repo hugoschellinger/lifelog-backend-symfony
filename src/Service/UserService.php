@@ -2,6 +2,7 @@
 
 namespace App\Service;
 
+use App\Entity\User;
 use App\Repository\UserRepository;
 use Exception;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
@@ -36,5 +37,13 @@ class UserService extends AbstractService
         $user->setVerificationToken(null);
 
         $this->save($user);
+    }
+
+    public function findUserForGoogleConnection(string $email, string $googleUID = null): ?User{
+        return $this->repository->findUserForGoogleConnection($email, $googleUID);
+    }
+
+    public function findUserForAppleConnection(string $email, string $appleUID = null): ?User{
+        return $this->repository->findUserForAppleConnection($email, $appleUID);
     }
 }
