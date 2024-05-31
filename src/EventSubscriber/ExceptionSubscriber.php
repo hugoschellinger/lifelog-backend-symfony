@@ -12,7 +12,7 @@ use Symfony\Component\HttpKernel\KernelEvents;
 use App\Service\ExceptionService;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
-readonly class ExceptionSubscriber implements EventSubscriberInterface
+class ExceptionSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private LoggerInterface $logger,
