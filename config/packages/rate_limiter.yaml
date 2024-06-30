@@ -1,0 +1,16 @@
+# config/packages/rate_limiter.yaml
+# @see https://symfony.com/doc/current/rate_limiter.html
+framework:
+    rate_limiter:
+        api:
+            policy: 'token_bucket'
+            limit: 5000
+            rate: { interval: '15 minutes', amount: 500 }
+        test:
+            policy: 'fixed_window'
+            limit: 10
+            interval: '1 minute'
+        login_check:
+            policy: 'sliding_window'
+            limit: 5
+            interval: '1 minute'

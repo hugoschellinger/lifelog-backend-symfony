@@ -26,11 +26,6 @@ security:
             jwt: ~
             refresh_jwt:
                 check_path: /api/token/refresh # or, you may use the `api_refresh_token` route name
-
-            # configure the maximum login attempts
-            login_throttling: null
-                # max_attempts: 5          # per minute ...
-                # interval: '1 seconds' # ... or in a custom period
             logout:
                 path: api_logout
 
