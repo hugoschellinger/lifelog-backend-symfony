@@ -99,8 +99,9 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/whoami', name: 'whoami', methods: ["GET"])]
-    public function whoami(#[CurrentUser()]User $user): Response
+    public function whoami(): Response
     {
+        $user = $this->getUser();
         return $this->json($this->normalizer->normalize($user,"json",["groups" => ["User:read"]]));
     }
 
