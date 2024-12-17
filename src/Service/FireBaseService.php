@@ -30,7 +30,7 @@ class FireBaseService{
      */
     public function sendNotification(User $user,string $title, string $content){
         foreach($user->getDevice() as $device){
-            $chatMessage=new ChatMessage($content,new WebNotification($device->getToken(),["title"=>$title]));
+            $chatMessage=new ChatMessage($content,new WebNotification($device->getToken(),["title"=>$title], ["content"=>$content]));
             
             $message=$chatMessage->transport('firebase');
             try{
