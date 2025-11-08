@@ -13,23 +13,23 @@ class Progression
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer', unique: true)]
-    #[Groups(['progression:read', 'progression:write'])]
+    #[Groups(['progression:read', 'progression:write', 'goal:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['progression:read', 'progression:write'])]
+    #[Groups(['progression:read', 'progression:write', 'goal:read'])]
     private string $title;
 
     #[ORM\Column(type: 'text', nullable: true)]
-    #[Groups(['progression:read', 'progression:write'])]
+    #[Groups(['progression:read', 'progression:write', 'goal:read'])]
     private ?string $progressionDescription = null;
 
     #[ORM\Column(type: 'float')]
-    #[Groups(['progression:read', 'progression:write'])]
+    #[Groups(['progression:read', 'progression:write', 'goal:read'])]
     private float $measure;
 
     #[ORM\Column(type: 'datetime')]
-    #[Groups(['progression:read', 'progression:write'])]
+    #[Groups(['progression:read', 'progression:write', 'goal:read'])]
     private \DateTimeInterface $createdAt;
 
     #[ORM\ManyToOne(targetEntity: Goal::class, inversedBy: 'progressions')]
