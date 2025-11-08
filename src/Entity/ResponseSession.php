@@ -5,34 +5,33 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\VirtualProperty;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'response_session')]
 class ResponseSession
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    #[Groups(['response_session:read', 'response_session:write'])]
-    private ?string $id = null;
+        #[ORM\GeneratedValue]
+        #[ORM\Column(type: 'integer', unique: true)]
+    #[Groups(['response_session:read', 'response_session:write', 'answer:read'])]
+        private ?int $id = null;
 
     #[ORM\Column(type: 'datetime')]
-    #[Groups(['response_session:read', 'response_session:write'])]
+    #[Groups(['response_session:read', 'response_session:write', 'answer:read'])]
     private \DateTimeInterface $sessionDate;
 
     #[ORM\Column(type: 'boolean')]
-    #[Groups(['response_session:read', 'response_session:write'])]
+    #[Groups(['response_session:read', 'response_session:write', 'answer:read'])]
     private bool $isCompleted = false;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    #[Groups(['response_session:read', 'response_session:write'])]
+    #[Groups(['response_session:read', 'response_session:write', 'answer:read'])]
     private ?\DateTimeInterface $completionDate = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['response_session:read', 'response_session:write'])]
+    #[Groups(['response_session:read', 'response_session:write', 'answer:read'])]
     private ?string $sessionTitle = null;
 
     #[ORM\ManyToOne(targetEntity: Questionnaire::class, inversedBy: 'responseSessions')]
@@ -50,7 +49,7 @@ class ResponseSession
         $this->answers = new ArrayCollection();
     }
 
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -181,6 +180,13 @@ class ResponseSession
         }
 
         return $this->sessionDate->diff($this->completionDate);
+    }
+    
+    #[VirtualProperty]
+    #[Groups(['response_session:read'])]
+    public function getAnswersCount(): int
+    {
+        return $this->answers->count();
     }
 }
 

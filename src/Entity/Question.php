@@ -5,60 +5,63 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\VirtualProperty;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'question')]
 class Question
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    #[Groups(['question:read', 'question:write'])]
-    private ?string $id = null;
+        #[ORM\GeneratedValue]
+        #[ORM\Column(type: 'integer', unique: true)]
+    #[Groups(['question:read', 'question:write', 'answer:read'])]
+        private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
-    #[Groups(['question:read', 'question:write'])]
+    #[Groups(['question:read', 'question:write', 'answer:read'])]
     private string $title;
 
     #[ORM\Column(type: 'text', nullable: true)]
-    #[Groups(['question:read', 'question:write'])]
+    #[Groups(['question:read', 'question:write', 'answer:read'])]
     private ?string $questionDescription = null;
 
     #[ORM\Column(type: 'string', enumType: QuestionType::class)]
-    #[Groups(['question:read', 'question:write'])]
+    #[Groups(['question:read', 'question:write', 'answer:read'])]
     private QuestionType $type;
 
     #[ORM\Column(type: 'boolean')]
-    #[Groups(['question:read', 'question:write'])]
+    #[Groups(['question:read', 'question:write', 'answer:read'])]
     private bool $isRequired = false;
 
-    #[ORM\Column(type: 'integer')]
-    #[Groups(['question:read', 'question:write'])]
+    #[ORM\Column(type: 'boolean')]
+    #[Groups(['question:read', 'question:write', 'answer:read'])]
+    private bool $isActive = true;
+
+    #[ORM\Column(name: 'display_order', type: 'integer')]
+    #[Groups(['question:read', 'question:write', 'answer:read'])]
     private int $order = 0;
 
     #[ORM\Column(type: 'json')]
-    #[Groups(['question:read', 'question:write'])]
+    #[Groups(['question:read', 'question:write', 'answer:read'])]
     private array $options = [];
 
     #[ORM\Column(type: 'float', nullable: true)]
-    #[Groups(['question:read', 'question:write'])]
+    #[Groups(['question:read', 'question:write', 'answer:read'])]
     private ?float $minValue = null;
 
     #[ORM\Column(type: 'float', nullable: true)]
-    #[Groups(['question:read', 'question:write'])]
+    #[Groups(['question:read', 'question:write', 'answer:read'])]
     private ?float $maxValue = null;
 
     #[ORM\Column(type: 'datetime')]
-    #[Groups(['question:read', 'question:write'])]
+    #[Groups(['question:read', 'question:write', 'answer:read'])]
     private \DateTimeInterface $createdAt;
 
-    #[ORM\ManyToOne(targetEntity: Questionnaire::class, inversedBy: 'questions')]
-    #[ORM\JoinColumn(name: 'questionnaire_id', referencedColumnName: 'id')]
+    #[ORM\ManyToOne(targetEntity: Year::class, inversedBy: 'questions')]
+    #[ORM\JoinColumn(name: 'year_id', referencedColumnName: 'id')]
     #[Groups(['question:read'])]
-    private ?Questionnaire $questionnaire = null;
+    private ?Year $year = null;
 
     #[ORM\OneToMany(targetEntity: Answer::class, mappedBy: 'question', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['question:read'])]
@@ -70,7 +73,7 @@ class Question
         $this->answers = new ArrayCollection();
     }
 
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -116,6 +119,17 @@ class Question
     public function setIsRequired(bool $isRequired): self
     {
         $this->isRequired = $isRequired;
+        return $this;
+    }
+
+    public function isActive(): bool
+    {
+        return $this->isActive;
+    }
+
+    public function setIsActive(bool $isActive): self
+    {
+        $this->isActive = $isActive;
         return $this;
     }
 
@@ -174,14 +188,14 @@ class Question
         return $this;
     }
 
-    public function getQuestionnaire(): ?Questionnaire
+    public function getYear(): ?Year
     {
-        return $this->questionnaire;
+        return $this->year;
     }
 
-    public function setQuestionnaire(?Questionnaire $questionnaire): self
+    public function setYear(?Year $year): self
     {
-        $this->questionnaire = $questionnaire;
+        $this->year = $year;
         return $this;
     }
 

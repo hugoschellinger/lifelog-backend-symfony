@@ -5,19 +5,18 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'questionnaire')]
 class Questionnaire
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
+        #[ORM\GeneratedValue]
+        #[ORM\Column(type: 'integer', unique: true)]
     #[Groups(['questionnaire:read', 'questionnaire:write'])]
-    private ?string $id = null;
+        private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['questionnaire:read', 'questionnaire:write'])]
@@ -37,13 +36,13 @@ class Questionnaire
 
     #[ORM\OneToOne(targetEntity: Year::class, inversedBy: 'questionnaire', cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'year_id', referencedColumnName: 'id')]
-    #[Groups(['questionnaire:read'])]
+    #[Ignore]
     private ?Year $year = null;
 
-    #[ORM\OneToMany(targetEntity: Question::class, mappedBy: 'questionnaire', cascade: ['persist', 'remove'], orphanRemoval: true)]
-    #[ORM\OrderBy(['order' => 'ASC'])]
-    #[Groups(['questionnaire:read'])]
-    private Collection $questions;
+    // Relation supprimée car Question n'a pas de propriété 'questionnaire'
+    // Les questions sont liées à Year, pas directement à Questionnaire
+    // Utiliser getYear()->getQuestions() pour accéder aux questions
+    // private Collection $questions;
 
     #[ORM\OneToMany(targetEntity: ResponseSession::class, mappedBy: 'questionnaire', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[Groups(['questionnaire:read'])]
@@ -52,11 +51,11 @@ class Questionnaire
     public function __construct()
     {
         $this->createdAt = new \DateTime();
-        $this->questions = new ArrayCollection();
+        // $this->questions = new ArrayCollection(); // Supprimé car la relation n'existe plus
         $this->responseSessions = new ArrayCollection();
     }
 
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
     }
@@ -118,27 +117,30 @@ class Questionnaire
 
     /**
      * @return Collection<int, Question>
+     * Méthode virtuelle qui récupère les questions via Year
      */
     public function getQuestions(): Collection
     {
-        return $this->questions;
+        if ($this->year) {
+            return $this->year->getQuestions();
+        }
+        return new ArrayCollection();
     }
 
     public function addQuestion(Question $question): self
     {
-        if (!$this->questions->contains($question)) {
-            $this->questions->add($question);
-            $question->setQuestionnaire($this);
+        // Les questions sont ajoutées via Year, pas directement via Questionnaire
+        if ($this->year) {
+            $this->year->addQuestion($question);
         }
         return $this;
     }
 
     public function removeQuestion(Question $question): self
     {
-        if ($this->questions->removeElement($question)) {
-            if ($question->getQuestionnaire() === $this) {
-                $question->setQuestionnaire(null);
-            }
+        // Les questions sont supprimées via Year, pas directement via Questionnaire
+        if ($this->year) {
+            $this->year->removeQuestion($question);
         }
         return $this;
     }
@@ -172,22 +174,24 @@ class Questionnaire
 
     public function getCompletionPercentage(): float
     {
-        if ($this->questions->isEmpty()) {
+        $questions = $this->getQuestions();
+        if ($questions->isEmpty()) {
             return 0;
         }
 
-        $answeredQuestions = $this->questions->filter(fn(Question $question) => !$question->getAnswers()->isEmpty());
-        return (count($answeredQuestions) / count($this->questions)) * 100;
+        $answeredQuestions = $questions->filter(fn(Question $question) => !$question->getAnswers()->isEmpty());
+        return (count($answeredQuestions) / count($questions)) * 100;
     }
 
     public function getAnsweredQuestionsCount(): int
     {
-        return $this->questions->filter(fn(Question $question) => !$question->getAnswers()->isEmpty())->count();
+        $questions = $this->getQuestions();
+        return $questions->filter(fn(Question $question) => !$question->getAnswers()->isEmpty())->count();
     }
 
     public function getTotalQuestionsCount(): int
     {
-        return $this->questions->count();
+        return $this->getQuestions()->count();
     }
 
     public function isCompleted(): bool
@@ -218,7 +222,7 @@ class Questionnaire
 
     public function canCreateNewSession(): bool
     {
-        return !$this->questions->isEmpty();
+        return !$this->getQuestions()->isEmpty();
     }
 }
 

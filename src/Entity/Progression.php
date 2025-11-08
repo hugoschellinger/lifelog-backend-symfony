@@ -3,19 +3,18 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'progression')]
 class Progression
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer', unique: true)]
     #[Groups(['progression:read', 'progression:write'])]
-    private ?string $id = null;
+    private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['progression:read', 'progression:write'])]
@@ -35,7 +34,7 @@ class Progression
 
     #[ORM\ManyToOne(targetEntity: Goal::class, inversedBy: 'progressions')]
     #[ORM\JoinColumn(name: 'goal_id', referencedColumnName: 'id')]
-    #[Groups(['progression:read'])]
+    #[Ignore]
     private ?Goal $goal = null;
 
     public function __construct()
@@ -43,7 +42,7 @@ class Progression
         $this->createdAt = new \DateTime();
     }
 
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
     }

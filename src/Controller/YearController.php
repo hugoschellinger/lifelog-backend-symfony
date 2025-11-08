@@ -30,7 +30,7 @@ class YearController extends AbstractController
         return new JsonResponse(json_decode($data, true), Response::HTTP_OK);
     }
 
-    #[Route('/{value}', name: 'get', methods: ['GET'])]
+    #[Route('/{value}', name: 'get', methods: ['GET'], requirements: ['value' => '\\d+'])]
     public function get(int $value): JsonResponse
     {
         $year = $this->yearRepository->findOneBy(['value' => $value]);
@@ -40,23 +40,58 @@ class YearController extends AbstractController
             $year = new Year($value);
             $this->em->persist($year);
             $this->em->flush();
+            // Recharger l'entité depuis la base de données pour s'assurer qu'elle est correctement initialisée
+            $year = $this->yearRepository->findOneBy(['value' => $value]);
         }
         
-        $data = $this->serializer->serialize($year, 'json', ['groups' => ['year:read']]);
-        return new JsonResponse(json_decode($data, true), Response::HTTP_OK);
+        if (!$year) {
+            return new JsonResponse(['error' => 'Year not found'], Response::HTTP_NOT_FOUND);
+        }
+        
+        // Créer manuellement le tableau pour éviter les problèmes de sérialisation
+        $data = [
+            'id' => $year->getId(),
+            'value' => $year->getValue(),
+        ];
+        
+        return new JsonResponse($data, Response::HTTP_OK);
     }
 
     #[Route('', name: 'create', methods: ['POST'])]
     public function create(Request $request): JsonResponse
     {
-        $data = json_decode($request->getContent(), true);
-        $year = $this->serializer->deserialize($request->getContent(), Year::class, 'json', ['groups' => ['year:write']]);
+        $payload = json_decode($request->getContent(), true);
+        if (!is_array($payload)) {
+            return new JsonResponse(['error' => 'Invalid JSON body'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $value = $payload['value'] ?? null;
+        if ($value === null) {
+            return new JsonResponse(['error' => 'Missing field: value'], Response::HTTP_BAD_REQUEST);
+        }
+
+        // Vérifier si l'année existe déjà
+        $existingYear = $this->yearRepository->findOneBy(['value' => $value]);
+        if ($existingYear) {
+            return new JsonResponse(['error' => 'Year already exists'], Response::HTTP_CONFLICT);
+        }
+
+        $year = new Year($value);
         
         $this->em->persist($year);
         $this->em->flush();
 
-        $responseData = $this->serializer->serialize($year, 'json', ['groups' => ['year:read']]);
-        return new JsonResponse(json_decode($responseData, true), Response::HTTP_CREATED);
+        try {
+            $responseData = $this->serializer->serialize($year, 'json', ['groups' => ['year:read']]);
+            return new JsonResponse(json_decode($responseData, true), Response::HTTP_CREATED);
+        } catch (\Exception $e) {
+            // Si la sérialisation échoue, créer manuellement le tableau
+            $data = [
+                'id' => $year->getId(),
+                'value' => $year->getValue(),
+            ];
+            return new JsonResponse($data, Response::HTTP_CREATED);
+        }
     }
 
     #[Route('/available', name: 'available', methods: ['GET'])]

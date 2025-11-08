@@ -5,19 +5,18 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'goal')]
 class Goal
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
+        #[ORM\GeneratedValue]
+        #[ORM\Column(type: 'integer', unique: true)]
     #[Groups(['goal:read', 'goal:write'])]
-    private ?string $id = null;
+        private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['goal:read', 'goal:write'])]
@@ -45,7 +44,7 @@ class Goal
 
     #[ORM\ManyToOne(targetEntity: GlobalObjective::class, inversedBy: 'goals')]
     #[ORM\JoinColumn(name: 'global_objective_id', referencedColumnName: 'id')]
-    #[Groups(['goal:read'])]
+    #[Ignore]
     private ?GlobalObjective $globalObjective = null;
 
     #[ORM\OneToMany(targetEntity: Progression::class, mappedBy: 'goal', cascade: ['persist', 'remove'], orphanRemoval: true)]
@@ -58,7 +57,7 @@ class Goal
         $this->progressions = new ArrayCollection();
     }
 
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
     }

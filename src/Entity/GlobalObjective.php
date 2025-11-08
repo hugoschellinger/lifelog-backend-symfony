@@ -5,19 +5,18 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Annotation\Ignore;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'global_objective')]
 class GlobalObjective
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
+        #[ORM\GeneratedValue]
+        #[ORM\Column(type: 'integer', unique: true)]
     #[Groups(['global_objective:read', 'global_objective:write'])]
-    private ?string $id = null;
+        private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['global_objective:read', 'global_objective:write'])]
@@ -33,7 +32,7 @@ class GlobalObjective
 
     #[ORM\OneToOne(targetEntity: Year::class, inversedBy: 'globalObjective', cascade: ['persist'])]
     #[ORM\JoinColumn(name: 'year_id', referencedColumnName: 'id')]
-    #[Groups(['global_objective:read'])]
+    #[Ignore]
     private ?Year $year = null;
 
     #[ORM\OneToMany(targetEntity: Goal::class, mappedBy: 'globalObjective', cascade: ['persist', 'remove'], orphanRemoval: true)]
@@ -45,7 +44,7 @@ class GlobalObjective
         $this->goals = new ArrayCollection();
     }
 
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
     }

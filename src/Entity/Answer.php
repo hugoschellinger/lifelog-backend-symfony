@@ -3,7 +3,6 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Ramsey\Uuid\Doctrine\UuidGenerator;
 use Symfony\Component\Serializer\Annotation\Groups;
 
 #[ORM\Entity]
@@ -11,11 +10,10 @@ use Symfony\Component\Serializer\Annotation\Groups;
 class Answer
 {
     #[ORM\Id]
-    #[ORM\Column(type: 'uuid', unique: true)]
-    #[ORM\GeneratedValue(strategy: 'CUSTOM')]
-    #[ORM\CustomIdGenerator(class: UuidGenerator::class)]
-    #[Groups(['answer:read', 'answer:write'])]
-    private ?string $id = null;
+        #[ORM\GeneratedValue]
+        #[ORM\Column(type: 'integer', unique: true)]
+    #[Groups(['answer:read', 'answer:write', 'question:read'])]
+        private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups(['answer:read', 'answer:write'])]
@@ -56,7 +54,7 @@ class Answer
         $this->answeredAt = new \DateTime();
     }
 
-    public function getId(): ?string
+    public function getId(): ?int
     {
         return $this->id;
     }

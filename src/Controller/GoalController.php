@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Entity\Goal;
 use App\Entity\GlobalObjective;
+use App\Entity\ObjectiveType;
 use Doctrine\ORM\EntityManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -22,7 +23,7 @@ class GoalController extends AbstractController
     }
 
     #[Route('/global-objective/{globalObjectiveId}', name: 'list', methods: ['GET'])]
-    public function list(string $globalObjectiveId): JsonResponse
+    public function list(int $globalObjectiveId): JsonResponse
     {
         $globalObjective = $this->em->getRepository(GlobalObjective::class)->find($globalObjectiveId);
         if (!$globalObjective) {
@@ -35,7 +36,7 @@ class GoalController extends AbstractController
     }
 
     #[Route('/{id}', name: 'get', methods: ['GET'])]
-    public function get(string $id): JsonResponse
+    public function get(int $id): JsonResponse
     {
         $goal = $this->em->getRepository(Goal::class)->find($id);
         if (!$goal) {
@@ -47,16 +48,51 @@ class GoalController extends AbstractController
     }
 
     #[Route('/global-objective/{globalObjectiveId}', name: 'create', methods: ['POST'])]
-    public function create(string $globalObjectiveId, Request $request): JsonResponse
+    public function create(int $globalObjectiveId, Request $request): JsonResponse
     {
         $globalObjective = $this->em->getRepository(GlobalObjective::class)->find($globalObjectiveId);
         if (!$globalObjective) {
             return new JsonResponse(['error' => 'Global objective not found'], Response::HTTP_NOT_FOUND);
         }
 
-        $goal = $this->serializer->deserialize($request->getContent(), Goal::class, 'json', ['groups' => ['goal:write']]);
-        $goal->setGlobalObjective($globalObjective);
-        
+        $payload = json_decode($request->getContent(), true);
+        if (!is_array($payload)) {
+            return new JsonResponse(['error' => 'Invalid JSON body'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $title = $payload['title'] ?? null;
+        $description = $payload['goal_description'] ?? ($payload['goalDescription'] ?? null);
+        $measure = $payload['measure'] ?? null;
+        $measureLabel = $payload['measure_label'] ?? ($payload['measureLabel'] ?? null);
+        $targetDateRaw = $payload['target_date'] ?? ($payload['targetDate'] ?? null);
+        $typeValue = $payload['type'] ?? null;
+
+        if (!$title || $measure === null || !$measureLabel || !$targetDateRaw || !$typeValue) {
+            return new JsonResponse(['error' => 'Missing fields: title, measure, measure_label, target_date, type'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $type = ObjectiveType::from($typeValue);
+        } catch (\ValueError $e) {
+            return new JsonResponse(['error' => 'Invalid type value'], Response::HTTP_BAD_REQUEST);
+        }
+
+        try {
+            $targetDate = new \DateTime($targetDateRaw);
+        } catch (\Exception $e) {
+            return new JsonResponse(['error' => 'Invalid target_date format'], Response::HTTP_BAD_REQUEST);
+        }
+
+        $goal = new Goal();
+        $goal
+            ->setTitle($title)
+            ->setGoalDescription($description)
+            ->setMeasure((float)$measure)
+            ->setMeasureLabel($measureLabel)
+            ->setTargetDate($targetDate)
+            ->setType($type)
+            ->setGlobalObjective($globalObjective);
+
         $this->em->persist($goal);
         $this->em->flush();
 
@@ -65,7 +101,7 @@ class GoalController extends AbstractController
     }
 
     #[Route('/{id}', name: 'update', methods: ['PUT'])]
-    public function update(string $id, Request $request): JsonResponse
+    public function update(int $id, Request $request): JsonResponse
     {
         $goal = $this->em->getRepository(Goal::class)->find($id);
         if (!$goal) {
@@ -84,7 +120,7 @@ class GoalController extends AbstractController
     }
 
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
-    public function delete(string $id): JsonResponse
+    public function delete(int $id): JsonResponse
     {
         $goal = $this->em->getRepository(Goal::class)->find($id);
         if (!$goal) {
