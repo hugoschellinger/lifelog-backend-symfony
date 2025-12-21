@@ -7,6 +7,7 @@ enum ObjectiveType: string
     case PROFESSIONNEL = 'professionnel';
     case SPORTIF = 'sportif';
     case SOCIAL = 'social';
+    case SANTE = 'sante';
 
     public function getDisplayName(): string
     {
@@ -14,6 +15,7 @@ enum ObjectiveType: string
             self::PROFESSIONNEL => 'Professionnel',
             self::SPORTIF => 'Sportif',
             self::SOCIAL => 'Social',
+            self::SANTE => 'Santé',
         };
     }
 
@@ -23,6 +25,7 @@ enum ObjectiveType: string
             self::PROFESSIONNEL => 'briefcase.fill',
             self::SPORTIF => 'figure.run',
             self::SOCIAL => 'person.2.fill',
+            self::SANTE => 'heart.fill',
         };
     }
 }
