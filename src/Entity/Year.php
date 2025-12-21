@@ -31,6 +31,10 @@ class Year
     #[Ignore]
     private ?Questionnaire $questionnaire = null;
 
+    #[ORM\OneToOne(targetEntity: Retrospection::class, mappedBy: 'year', cascade: ['persist', 'remove'])]
+    #[Ignore]
+    private ?Retrospection $retrospection = null;
+
     #[ORM\OneToMany(targetEntity: Question::class, mappedBy: 'year', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[ORM\OrderBy(['order' => 'ASC'])]
     #[Groups(['year:read'])]
@@ -94,6 +98,25 @@ class Year
     public function hasQuestionnaire(): bool
     {
         return $this->questionnaire !== null;
+    }
+
+    public function getRetrospection(): ?Retrospection
+    {
+        return $this->retrospection;
+    }
+
+    public function setRetrospection(?Retrospection $retrospection): self
+    {
+        $this->retrospection = $retrospection;
+        if ($retrospection && $retrospection->getYear() !== $this) {
+            $retrospection->setYear($this);
+        }
+        return $this;
+    }
+
+    public function hasRetrospection(): bool
+    {
+        return $this->retrospection !== null;
     }
 
     /**

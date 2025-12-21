@@ -52,9 +52,14 @@ class Goal
     #[Groups(['goal:read'])]
     private Collection $progressions;
 
+    #[ORM\OneToMany(targetEntity: GoalRetrospection::class, mappedBy: 'goal', cascade: ['persist', 'remove'], orphanRemoval: true)]
+    #[Groups(['goal:read'])]
+    private Collection $goalRetrospections;
+
     public function __construct()
     {
         $this->progressions = new ArrayCollection();
+        $this->goalRetrospections = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -198,6 +203,33 @@ class Goal
         $now = new \DateTime();
         $diff = $now->diff($this->targetDate);
         return $diff->invert ? 0 : $diff->days;
+    }
+
+    /**
+     * @return Collection<int, GoalRetrospection>
+     */
+    public function getGoalRetrospections(): Collection
+    {
+        return $this->goalRetrospections;
+    }
+
+    public function addGoalRetrospection(GoalRetrospection $goalRetrospection): self
+    {
+        if (!$this->goalRetrospections->contains($goalRetrospection)) {
+            $this->goalRetrospections->add($goalRetrospection);
+            $goalRetrospection->setGoal($this);
+        }
+        return $this;
+    }
+
+    public function removeGoalRetrospection(GoalRetrospection $goalRetrospection): self
+    {
+        if ($this->goalRetrospections->removeElement($goalRetrospection)) {
+            if ($goalRetrospection->getGoal() === $this) {
+                $goalRetrospection->setGoal(null);
+            }
+        }
+        return $this;
     }
 }
 
