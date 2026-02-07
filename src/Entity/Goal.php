@@ -171,17 +171,18 @@ class Goal
         return $this;
     }
 
+    /**
+     * Retourne la progression actuelle (somme de toutes les progressions).
+     * Chaque progression représente une valeur à ajouter au total, pas à remplacer.
+     */
     public function getCurrentProgress(): float
     {
-        $progressions = $this->progressions->toArray();
-        if (empty($progressions)) {
-            return 0.0;
+        $total = 0.0;
+        foreach ($this->progressions as $progression) {
+            $total += $progression->getMeasure();
         }
 
-        usort($progressions, fn(Progression $a, Progression $b) => $a->getCreatedAt() <=> $b->getCreatedAt());
-        $lastProgression = end($progressions);
-
-        return $lastProgression ? $lastProgression->getMeasure() : 0.0;
+        return $total;
     }
 
     public function getProgressPercentage(): float
