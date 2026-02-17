@@ -23,8 +23,9 @@ security:
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
             login_throttling:
-                # utilise le service "limiter.login_check" généré par la config rate_limiter
-                limiter: limiter.login_check
+                # Utilise le limiteur intégré basé sur RequestRateLimiterInterface
+                max_attempts: 5
+                interval: '15 minutes'
             jwt: ~
             refresh_jwt:
                 check_path: /api/token/refresh # or, you may use the `api_refresh_token` route name

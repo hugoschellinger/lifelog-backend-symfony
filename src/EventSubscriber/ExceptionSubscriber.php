@@ -5,6 +5,7 @@ namespace App\EventSubscriber;
 use App\Entity\Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
+use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
@@ -17,7 +18,7 @@ class ExceptionSubscriber implements EventSubscriberInterface
     public function __construct(
         private LoggerInterface $logger,
         private ExceptionService $exceptionService,
-        private ParameterBagInterface $bag
+        private ParameterBagInterface $bag,
     ) {
     }
 
@@ -30,34 +31,47 @@ class ExceptionSubscriber implements EventSubscriberInterface
 
     public function onKernelException(ExceptionEvent $event): void
     {
+        $throwable = $event->getThrowable();
+        $request = $event->getRequest();
 
-        $exception = $event->getThrowable();
-        $response = new Response();
+        if ($throwable instanceof HttpExceptionInterface) {
+            $statusCode = $throwable->getStatusCode();
+            $responseData = [
+                'message' => $throwable->getMessage(),
+                'code' => $statusCode,
+            ];
 
-        if ($exception instanceof HttpExceptionInterface) {
-            $response->setStatusCode($exception->getStatusCode());
-            $response->headers->replace(["content-type" => "application/json"]);
-            $message = sprintf(json_encode(['message' => $exception->getMessage(), 'code' => $exception->getStatusCode()]));
-            if ($exception->getStatusCode() !== 404) {
-
+            if ($statusCode !== 404) {
                 $exception = (new Exception())
-                    ->setCode($exception->getStatusCode())
-                    ->setMessage($exception->getMessage());
+                    ->setCode($statusCode)
+                    ->setMessage($throwable->getMessage());
 
                 $this->exceptionService->save($exception);
             }
         } else {
-            $message = sprintf(json_encode(['message' => $exception->getMessage(), 'code' => $exception->getCode()]));
-            $response->setStatusCode(Response::HTTP_INTERNAL_SERVER_ERROR);
+            $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
+            $responseData = [
+                'message' => $throwable->getMessage(),
+                'code' => $throwable->getCode(),
+            ];
         }
 
-        $response->setContent($message);
+        $response = new JsonResponse($responseData, $statusCode);
         $event->setResponse($response);
 
-        if($this->bag->get('app.app_env') == "dev" || $this->bag->get('app.app_env') == "test"){
-            dump($exception->getMessage());
-        }else{
-            $this->logger->error($exception->getMessage());
+        $context = [
+            'exception'  => $throwable,
+            'route'      => $request->attributes->get('_route', 'unknown'),
+            'method'     => $request->getMethod(),
+            'uri'        => $request->getPathInfo(),
+            'client_ip'  => $request->getClientIp(),
+            'status_code' => $statusCode,
+        ];
+
+        if ($this->bag->get('app.app_env') === 'dev' || $this->bag->get('app.app_env') === 'test') {
+            dump($throwable);
+        } else {
+            $this->logger->error($throwable->getMessage(), $context);
         }
     }
 }

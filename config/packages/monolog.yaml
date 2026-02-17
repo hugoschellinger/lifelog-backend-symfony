@@ -38,24 +38,40 @@ when@test:
 when@prod:
     monolog:
         handlers:
+            # Stream principal — un seul fichier pour Loki
+            # Filtrage dans Grafana via LogQL : | json | channel="request"
+            # UidProcessor ajoute extra.uid pour corréler les logs d'une même requête
             main:
+                type: rotating_file
+                path: "%kernel.logs_dir%/main.log"
+                level: info
+                channels: ["!event", "!doctrine", "!console", "!deprecation"]
+                formatter: monolog.formatter.json
+                max_files: 14
+
+            # Erreurs avec contexte de debug complet
+            # Bufferise les 50 derniers messages, flush uniquement quand une erreur survient
+            # Inclut les channels lock/cache/security en DEBUG pour le contexte
+            error:
                 type: fingers_crossed
                 action_level: error
-                handler: nested
+                handler: error_stream
                 excluded_http_codes: [404, 405]
-                channels: ["!deprecation"]
-                buffer_size: 50 # How many messages should be saved? Prevent memory leaks
-            nested:
-                type: stream
-                path: php://stderr
+                channels: ["!event", "!doctrine", "!console", "!deprecation"]
+                buffer_size: 50
+
+            error_stream:
+                type: rotating_file
+                path: "%kernel.logs_dir%/error.log"
                 level: debug
                 formatter: monolog.formatter.json
-            console:
-                type: console
-                process_psr_3_messages: false
-                channels: ["!event", "!doctrine"]
+                include_stacktraces: true
+                max_files: 30
+
+            # Dépréciations isolées
             deprecation:
-                type: stream
+                type: rotating_file
+                path: "%kernel.logs_dir%/deprecation.log"
                 channels: [deprecation]
-                path: php://stderr
                 formatter: monolog.formatter.json
+                max_files: 7
