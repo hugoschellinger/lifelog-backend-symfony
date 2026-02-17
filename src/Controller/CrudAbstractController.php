@@ -19,12 +19,11 @@ abstract class CrudAbstractController extends AbstractController
     protected array $context;
     protected array $modifyAttributes;
 
-    public function __construct(string $class, AbstractService $service, array $context, array $modifyAttributes=null)
+    public function __construct(string $class, AbstractService $service, array $context)
     {
         $this->class = $class;
         $this->service = $service;
         $this->context = $context;
-        $this->context = $modifyAttributes;
     }
 
     #[Route(path: "", name: "getAll", methods: ["GET"])]

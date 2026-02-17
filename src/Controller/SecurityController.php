@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Service\FireBaseService;
 use App\Service\UserService;
 use App\Service\SecurityService;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
@@ -33,11 +32,11 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/test', name: 'test', methods: ["POST"])]
-    public function test(UserService $userService, FireBaseService $FireBaseService): Response
+    public function test(UserService $userService): Response
     {
         /** @var User */
         $user=$userService->findOneBy(["id"=>$this->getUser()]);
-        $FireBaseService->sendNotification($user,"heyy","heyyyyyyyy");
+
 
         return $this->json("OK", 200);
     }
@@ -164,42 +163,6 @@ class SecurityController extends AbstractController
             }
 
             return $this->json(["message" => "OK"], 200);
-        }
-    }
-
-    #[Route('/connect/google', name: 'connect_with_google', methods: ["POST"])]
-    public function connectWithGoogle(Request $request, JWTTokenManagerInterface $JWTManager): Response
-    {
-        $email = $request->toArray()["email"] ?? null;
-        $googleUID = $request->toArray()["googleUID"] ?? null;
-        $firstname = $request->toArray()["firstname"] ?? null;
-        $lastname = $request->toArray()["lastname"] ?? null;
-
-        $user = $this->userService->findUserForGoogleConnection($email, $googleUID);
-
-        if($user){
-            return $this->json(["token" => $JWTManager->create($user), "data" => $this->normalizer->normalize($user,"json",["groups" => ["User:read"]])]);
-        }else{
-            $user = $this->securityService->registerWithGoogle($email, $googleUID, $firstname, $lastname);
-            return $this->json(["token" => $JWTManager->create($user), "data" => $this->normalizer->normalize($user,"json",["groups" => ["User:read"]])], 201);
-        }
-    }
-
-    #[Route('/connect/apple', name: 'connect_with_apple', methods: ["POST"])]
-    public function connectWithApple(Request $request, JWTTokenManagerInterface $JWTManager): Response
-    {
-        $email = $request->toArray()["email"] ?? null;
-        $appleUID = $request->toArray()["appleUID"] ?? null;
-        $givenName = $request->toArray()["givenName"] ?? null;
-        $familyName = $request->toArray()["familyName"] ?? null;
-
-        $user = $this->userService->findOneBy(["email" => $email, "appleUID" => $appleUID]);
-
-        if($user){
-            return $this->json(["token" => $JWTManager->create($user), "data" => $this->normalizer->normalize($user,"json",["groups" => ["User:read"]])]);
-        }else{
-            $user = $this->securityService->registerWithApple($email, $appleUID, $givenName, $familyName);
-            return $this->json(["token" => $JWTManager->create($user), "data" => $this->normalizer->normalize($user,"json",["groups" => ["User:read"]])], 201);
         }
     }
 }

@@ -2,11 +2,11 @@
 
 ![Logo](public/images//logo.png)
 
-_InitApi_ est une api php utilisant le framework Symfony qui fonctione avec le projet [initProject](https://github.com/hugoschellinger/InitProject). Vous trouverez en dessous le manuel d'utilisation de cette api :
+_InitApi_ est une api php utilisant le framework Symfony. Vous trouverez en dessous le manuel d'utilisation de cette api :
 
 ## Installation
 
-Pour commencer, ce projet est fait pour être forker et utiliser comme base de travail. Vous devez donc créer un nouveau projet en forkant ce ce projet. Ce projet fonctionne avec le projet de développement mobile [InitProject](https://github.com/hugoschellinger/InitProject) qu' il est conseillé d'utiliser.
+Pour commencer, ce projet est fait pour être forker et utiliser comme base de travail. Vous devez donc créer un nouveau projet en forkant ce ce projet.
 
 Voici les étapes pour installer ce projet :
 
@@ -25,8 +25,6 @@ Pour commencer, installer toutes les dépendances dont l' api a besoin :
 Il faut commencer par copier le fichier `.env.local.dist` et le coller en le renommant `.env.local`.
 
 A l'intérieur de ce fichier, vous devez renseigner les variable demandé :
-
-FIREBASE_TOKEN = `TOKEN_FIREBASE` <sub>(à faire après)</sub>
 
 JWT_PASSPHRASE = `PASSPHRASE_DES _LEFS_JWT` <sub>(commande : `php bin/console app:genere-jwt-passphrase`)</sub>
 
@@ -71,12 +69,6 @@ Par défaut, cette commande va créer un compte admin :
 * email : **admin@admin.fr**
 * mot de passe : **admin**
 
-### Configuration de Firebase
-
-Pour configurer Firebase, il faut créer une application firebase sur [leur site](https://console.firebase.google.com/u/0/?_gl=1*7s66mq*_ga*OTI3NjI1NjYyLjE2Nzg5NTMwNTQ.*_ga_CW55HF8NVT*MTY4NzA4MzM1OC4xMC4wLjE2ODcwODMzNTguMC4wLjA.)
-
-Ensuite, copier coller la clé de serveur de votre application Firebase dans la variable `FIREBASE_TOKEN` de votre `.env.local`.
-
 ## Lancement du serveur
 
 Pour lancer le serveur, il suffit tous simplement d'utiliser l'outil de symfony en tapant :
@@ -86,10 +78,6 @@ Pour lancer le serveur, il suffit tous simplement d'utiliser l'outil de symfony 
 **ATTENTION :** Il est très important de rajouter le `--no-tls` lorsque'on utiliser l'api avec une application mobile car le tls ne fonctionne pas pour développer sur mobile en mode développement.
 
 ## Valeurs ajoutées
-
-### Noticication Firebase
-
-L'api permet d'envoyer des notifications push a tous les appareils de tous les utilisateurs de l'application. Pour cela, il faut utiliser la fonction `App\Service\FireBaseService::sendNotification`.
 
 ### Création de mail
 

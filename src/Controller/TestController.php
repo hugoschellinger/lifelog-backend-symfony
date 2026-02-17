@@ -3,7 +3,6 @@
 namespace App\Controller;
 
 use App\Entity\User;
-use App\Service\FireBaseService;
 use App\Service\UserService;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
@@ -17,22 +16,8 @@ class TestController extends AbstractController
     }
 
     #[Route('/test', name: 'test', methods: ["POST"])]
-    public function test(UserService $userService, FireBaseService $FireBaseService): Response
+    public function test(): Response
     {
-        /** @var User */
-        $user=$userService->findOneBy(["id"=>$this->getUser()]);
-        $FireBaseService->sendNotification($user,"Test","Test de notification");
-
-        return $this->json("OK", 200);
-    }
-
-
-    #[Route('/pushNotification', name: 'push_notification', methods: ["GET"])]
-    public function testNotificationPush(UserService $userService, FireBaseService $FireBaseService): Response
-    {
-        /** @var User */
-        $user=$userService->findOneBy(["id"=>$this->getUser()]);
-        $FireBaseService->sendNotification($user,"Test","Test de notification");
 
         return $this->json("OK", 200);
     }

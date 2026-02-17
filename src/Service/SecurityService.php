@@ -85,60 +85,6 @@ class SecurityService
     }
 
     /**
-     * Connexion d'un utilisateur avec Google
-     *
-     * @param string $email Email de l'utilisateur
-     * @param string $googleUID Token UID Google
-     * @param string $firstname Prénom de l'utilisateur
-     * @param string $lastname Nom de famille de l'utilisateur
-     * @return User
-     */
-    function registerWithGoogle(string $email, string $googleUID, string $firstname, string $lastname):User
-    {
-        $alreadyRegisted = $this->userService->findOneBy(["email" => $email]);
-
-        if ($alreadyRegisted) {
-            throw new BadRequestHttpException($this->translator->trans("Email already used"));
-        }
-
-        $user = new User();
-        $user->setEmail($email);
-        $user->setFirstname($firstname);
-        $user->setLastname($lastname);
-        $user->setGoogleUID($googleUID);
-
-        $this->userService->save($user, true);
-        return $user;
-    }
-
-    /**
-     * Connexion d'un utilisateur avec Apple
-     *
-     * @param string $email Email de l'utilisateur
-     * @param string $appleUID Token UID Apple
-     * @param string $givenName Prénom de l'utilisateur
-     * @param string $familyName Nom de famille de l'utilisateur
-     * @return User
-     */
-    function registerWithApple(string $email, string $appleUID, string $givenName, string $familyName):User
-    {
-        $alreadyRegisted = $this->userService->findOneBy(["email" => $email]);
-
-        if ($alreadyRegisted) {
-            throw new BadRequestHttpException($this->translator->trans("Email already used"));
-        }
-
-        $user = new User();
-        $user->setEmail($email);
-        $user->setFirstname($givenName);
-        $user->setLastname($familyName);
-        $user->setAppleUID($appleUID);
-
-        $this->userService->save($user, true);
-        return $user;
-    }
-
-    /**
      * Envoie d'une mail d vérification d'email
      *
      * @param User $user Utilisateur à qui envoyer le mail

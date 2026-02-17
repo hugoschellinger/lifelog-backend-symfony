@@ -4,8 +4,6 @@ namespace App\Entity;
 
 use App\Repository\UserRepository;
 use DateTimeImmutable;
-use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\PasswordAuthenticatedUserInterface;
 use Symfony\Component\Security\Core\User\UserInterface;
@@ -55,17 +53,8 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     #[ORM\Column(nullable: true)]
     private ?\DateTimeImmutable $resetAt = null;
 
-    #[ORM\OneToMany(mappedBy: 'user', targetEntity: Device::class, orphanRemoval: true, cascade:["persist"])]
-    private Collection $device;
-
     #[ORM\Column]
     private ?\DateTimeImmutable $createdAt = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $appleUID = null;
-
-    #[ORM\Column(length: 255, nullable: true)]
-    private ?string $googleUID = null;
 
     #[Groups(["User:read"])]
     private ?bool $isVerified = null;
@@ -73,7 +62,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function __construct()
     {
         $this->lastConnexion=new DateTimeImmutable();
-        $this->device = new ArrayCollection();
         $this->createdAt = new DateTimeImmutable();
     }
 
@@ -219,36 +207,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
         return $this;
     }
 
-    /**
-     * @return Collection<int, device>
-     */
-    public function getDevice(): Collection
-    {
-        return $this->device;
-    }
-
-    public function addDevice(Device $device): self
-    {
-        if (!$this->device->contains($device)) {
-            $this->device->add($device);
-            $device->setUser($this);
-        }
-
-        return $this;
-    }
-
-    public function removeDevice(Device $device): self
-    {
-        if ($this->device->removeElement($device)) {
-            // set the owning side to null (unless already changed)
-            if ($device->getUser() === $this) {
-                $device->setUser(null);
-            }
-        }
-
-        return $this;
-    }
-
     public function getCreatedAt(): ?\DateTimeImmutable
     {
         return $this->createdAt;
@@ -257,30 +215,6 @@ class User implements UserInterface, PasswordAuthenticatedUserInterface
     public function setCreatedAt(\DateTimeImmutable $createdAt): self
     {
         $this->createdAt = $createdAt;
-
-        return $this;
-    }
-
-    public function getAppleUID(): ?string
-    {
-        return $this->appleUID;
-    }
-
-    public function setAppleUID(?string $appleUID): static
-    {
-        $this->appleUID = $appleUID;
-
-        return $this;
-    }
-
-    public function getGoogleUID(): ?string
-    {
-        return $this->googleUID;
-    }
-
-    public function setGoogleUID(?string $googleUID): static
-    {
-        $this->googleUID = $googleUID;
 
         return $this;
     }

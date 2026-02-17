@@ -38,12 +38,4 @@ class UserService extends AbstractService
 
         $this->save($user);
     }
-
-    public function findUserForGoogleConnection(string $email, string $googleUID = null): ?User{
-        return $this->repository->findUserForGoogleConnection($email, $googleUID);
-    }
-
-    public function findUserForAppleConnection(string $email, string $appleUID = null): ?User{
-        return $this->repository->findUserForAppleConnection($email, $appleUID);
-    }
 }

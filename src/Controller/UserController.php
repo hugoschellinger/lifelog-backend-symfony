@@ -9,7 +9,6 @@ use App\Service\UserService;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Routing\Annotation\Route;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -19,14 +18,12 @@ class UserController extends CrudAbstractController{
 
     private TranslatorInterface $translator;
     private UserService $userService;
-    private DeviceService $deviceService;
 
-    public function __construct(UserService $service,TranslatorInterface $translator, DeviceService $deviceService)
+    public function __construct(UserService $service,TranslatorInterface $translator)
     {
         parent::__construct(User::class,$service,["groups" => "User:read"],["firstname", "lastname"]);
         $this->translator=$translator;
         $this->userService=$service;
-        $this->deviceService=$deviceService;
     }
 
     #[Route('/verification', name: 'verification_email', methods:["POST"])]
@@ -70,23 +67,11 @@ class UserController extends CrudAbstractController{
     #[Route("/logout",name:"logout",methods:["POST"])]
     public function logout(Request $request){
 
-        $deviceToken= $request->toArray()["device"] ?? null;
-
-        // if(!$deviceToken){
-        //     throw new BadRequestHttpException($this->translator->trans("Device token is empty"));
-        // }
-
         /** @var User */
         $user = $this->userService->findOneBy(["id" => $this->getUser()]);
 
         if(!$user){
             throw new BadRequestException($this->translator->trans("user no connected"));
-        }
-
-        $device = $this->deviceService->findOneBy(["token" => $deviceToken]);
-
-        if($device){
-            $this->deviceService->delete($device);
         }
 
         return $this->json(["message"=>"OK"],200);
