@@ -2,7 +2,6 @@
 
 namespace App\EventSubscriber;
 
-use App\Entity\Exception;
 use Psr\Log\LoggerInterface;
 use Symfony\Component\EventDispatcher\EventSubscriberInterface;
 use Symfony\Component\HttpFoundation\JsonResponse;
@@ -10,14 +9,12 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Event\ExceptionEvent;
 use Symfony\Component\HttpKernel\Exception\HttpExceptionInterface;
 use Symfony\Component\HttpKernel\KernelEvents;
-use App\Service\ExceptionService;
 use Symfony\Component\DependencyInjection\ParameterBag\ParameterBagInterface;
 
 class ExceptionSubscriber implements EventSubscriberInterface
 {
     public function __construct(
         private LoggerInterface $logger,
-        private ExceptionService $exceptionService,
         private ParameterBagInterface $bag,
     ) {
     }
@@ -40,14 +37,6 @@ class ExceptionSubscriber implements EventSubscriberInterface
                 'message' => $throwable->getMessage(),
                 'code' => $statusCode,
             ];
-
-            if ($statusCode !== 404) {
-                $exception = (new Exception())
-                    ->setCode($statusCode)
-                    ->setMessage($throwable->getMessage());
-
-                $this->exceptionService->save($exception);
-            }
         } else {
             $statusCode = Response::HTTP_INTERNAL_SERVER_ERROR;
             $responseData = [
