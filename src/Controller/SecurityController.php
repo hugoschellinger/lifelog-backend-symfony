@@ -5,13 +5,12 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Service\UserService;
 use App\Service\SecurityService;
-use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
-use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
@@ -120,7 +119,7 @@ class SecurityController extends AbstractController
     #[Route('/resetPassword', name: 'reset_password', methods: ["POST", "GET"])]
     public function resetPassword(Request $request): Response
     {
-        $token = $request->get("token") ?? null;
+        $token = $request->toArray()["token"] ?? null;
 
         if ($token) {
 
@@ -134,8 +133,8 @@ class SecurityController extends AbstractController
             //RETURN PASSWORD FORM
             if ($request->getMethod() == "GET") return $this->render('security/resetPassword.html.twig');
 
-            $newPassword = $request->get("newPassword") ?? null;
-            $repeatedPassword = $request->get("repeatedPassword") ?? null;
+            $newPassword = $request->toArray()["newPassword"] ?? null;
+            $repeatedPassword = $request->toArray()["repeatedPassword"] ?? null;
 
             if($repeatedPassword !== $newPassword){
                 throw new BadRequestHttpException($this->translator->trans("Passwords are different"));
