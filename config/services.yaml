@@ -47,3 +47,7 @@ services:
     Symfony\Bridge\Monolog\Processor\WebProcessor:
         tags:
             - { name: monolog.processor }
+
+    App\Monolog\UserContextProcessor:
+        tags:
+            - { name: monolog.processor }

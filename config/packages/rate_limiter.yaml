@@ -21,4 +21,4 @@ framework:
         login_check:
             policy: 'sliding_window'
             limit: 5
-            interval: '15 minutes'
+            interval: '5 minutes'
