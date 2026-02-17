@@ -56,30 +56,6 @@ class UserRepository extends ServiceEntityRepository implements PasswordUpgrader
         $this->save($user, true);
     }
 
-    public function findUserForGoogleConnection(string $email, string $googleUID): ?User
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.email = :email')
-            ->andWhere('u.googleUID = :googleUID OR u.googleUID IS NULL')
-            ->setParameter('email', $email)
-            ->setParameter('googleUID', $googleUID)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-
-    public function findUserForAppleConnection(string $email, string $appleUID): ?User
-    {
-        return $this->createQueryBuilder('u')
-            ->andWhere('u.email = :email')
-            ->andWhere('u.appleUID = :appleUID OR u.appleUID IS NULL')
-            ->setParameter('email', $email)
-            ->setParameter('appleUID', $appleUID)
-            ->getQuery()
-            ->getOneOrNullResult()
-        ;
-    }
-
 //    /**
 //     * @return User[] Returns an array of User objects
 //     */

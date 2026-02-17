@@ -26,9 +26,16 @@ class RateLimiterListener
         //     return;
         // }
 
-        // create a limiter based on a unique identifier of the client
-        // (e.g. the client's IP address, a username/email, an API key, etc.)
-        $limiter = $this->apiLimiter->create($event->getRequest()->getClientIp());
+        $request = $event->getRequest();
+        $routeName = $request->attributes->get('_route');
+
+        // Pour la route de login API personnalisée, on utilise le limiter dédié "login_check"
+        if ($routeName === 'api_login') {
+            $limiter = $this->loginCheckLimiter->create($request->getClientIp());
+        } else {
+            // Global API limiter pour le reste des endpoints
+            $limiter = $this->apiLimiter->create($request->getClientIp());
+        }
 
         // the argument of consume() is the number of tokens to consume
         // and returns an object of type Limit

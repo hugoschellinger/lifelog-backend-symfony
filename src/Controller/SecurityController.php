@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Service\UserService;
 use App\Service\SecurityService;
+use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
@@ -12,6 +13,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Security\Http\Attribute\CurrentUser;
+use Symfony\Component\PasswordHasher\Hasher\UserPasswordHasherInterface;
 use Symfony\Component\Serializer\Normalizer\NormalizerInterface;
 use Symfony\Contracts\Translation\TranslatorInterface;
 
@@ -21,13 +23,24 @@ class SecurityController extends AbstractController
     private TranslatorInterface $translator;
     private SecurityService $securityService;
     private NormalizerInterface $normalizer;
+    private JWTTokenManagerInterface $jwtManager;
+    private UserPasswordHasherInterface $passwordHasher;
 
-    public function __construct(UserService $userService, TranslatorInterface $translator, SecurityService $securityService, NormalizerInterface $normalizer)
+    public function __construct(
+        UserService $userService,
+        TranslatorInterface $translator,
+        SecurityService $securityService,
+        NormalizerInterface $normalizer,
+        JWTTokenManagerInterface $jwtManager,
+        UserPasswordHasherInterface $passwordHasher
+    )
     {
         $this->userService = $userService;
         $this->translator = $translator;
         $this->securityService = $securityService;
         $this->normalizer = $normalizer;
+        $this->jwtManager = $jwtManager;
+        $this->passwordHasher = $passwordHasher;
     }
 
     #[Route('/test', name: 'test', methods: ["POST"])]
@@ -41,16 +54,24 @@ class SecurityController extends AbstractController
     }
 
     #[Route('/login', name: 'api_login', methods: ["POST"])]
-    public function login(
-        #[CurrentUser] ?User $user,
-    ): Response
+    public function login(Request $request): Response
     {
-        if(null == $user){
-            return $this->json(["message" => "Invalid credentials"], Response::HTTP_UNAUTHORIZED);
+        $data = $request->toArray();
+        $email = $data['email'] ?? null;
+        $password = $data['password'] ?? null;
+
+        if (!$email || !$password) {
+            throw new BadRequestHttpException($this->translator->trans('Email or password missing'));
         }
 
-        $token = "abc";
+        /** @var User|null $user */
+        $user = $this->userService->findOneBy(['email' => $email]);
 
+        if (!$user || !$this->passwordHasher->isPasswordValid($user, $password)) {
+            return $this->json(['message' => 'Invalid credentials'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $token = $this->jwtManager->create($user);
 
         return $this->json([
             'user' => $user->getUserIdentifier(),

@@ -2,15 +2,23 @@
 # @see https://symfony.com/doc/current/rate_limiter.html
 framework:
     rate_limiter:
+        # Global API limiter (par IP) pour une PME
+        # Permet des pics (jusqu'à 300 requêtes d'un coup) tout en lissant à ~60 req/min.
         api:
             policy: 'token_bucket'
-            limit: 5000
-            rate: { interval: '15 minutes', amount: 500 }
+            limit: 300              # capacité max du "seau"
+            rate: { interval: '1 minute', amount: 60 } # recharge
+
+        # Limiteur pour certaines routes sensibles annotées #[RateLimiter('test')]
+        # Exemple : endpoints de tests lourds, exports, etc.
         test:
             policy: 'fixed_window'
-            limit: 10
+            limit: 30
             interval: '1 minute'
+
+        # Limiteur dédié aux tentatives de login
+        # 5 essais par IP toutes les 15 minutes est un bon compromis sécurité/UX.
         login_check:
             policy: 'sliding_window'
             limit: 5
-            interval: '1 minute'
+            interval: '15 minutes'

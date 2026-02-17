@@ -22,6 +22,9 @@ security:
                 username_path: email 
                 success_handler: lexik_jwt_authentication.handler.authentication_success
                 failure_handler: lexik_jwt_authentication.handler.authentication_failure
+            login_throttling:
+                # utilise le service "limiter.login_check" généré par la config rate_limiter
+                limiter: limiter.login_check
             jwt: ~
             refresh_jwt:
                 check_path: /api/token/refresh # or, you may use the `api_refresh_token` route name
@@ -33,10 +36,6 @@ security:
     access_control:
         - { path: ^/api/(%app.locales%)/token/refresh, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%app.locales%)/user/verification, roles: PUBLIC_ACCESS }
-        - { path: ^/api/(%app.locales%)/test, roles: PUBLIC_ACCESS }
-        - { path: ^/api/(%app.locales%)/home, roles: PUBLIC_ACCESS }
-        - { path: ^/api/(%app.locales%)/connect/google, roles: PUBLIC_ACCESS }
-        - { path: ^/api/(%app.locales%)/connect/apple, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%app.locales%)/resetPassword, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%app.locales%)/version, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%app.locales%)/checkEmail, roles: PUBLIC_ACCESS }

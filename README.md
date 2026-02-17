@@ -14,9 +14,6 @@ Voici les étapes pour installer ce projet :
 
 Pour commencer, installer toutes les dépendances dont l' api a besoin :
 
-* Dépendances js
-> npm install
-
 * dépendances php
 > composer install
 
@@ -26,7 +23,7 @@ Il faut commencer par copier le fichier `.env.local.dist` et le coller en le ren
 
 A l'intérieur de ce fichier, vous devez renseigner les variable demandé :
 
-JWT_PASSPHRASE = `PASSPHRASE_DES _LEFS_JWT` <sub>(commande : `php bin/console app:genere-jwt-passphrase`)</sub>
+JWT_PASSPHRASE = `PASSPHRASE` <sub>(commande : `php bin/console app:genere-jwt-passphrase`)</sub>
 
 MAILER_DSN = `DSN_DU_MAILER`
 
