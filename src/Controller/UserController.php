@@ -38,7 +38,7 @@ class UserController extends CrudAbstractController{
     }
 
     #[Route('/sendVerificationEmail', name: 'send_verification_email', methods:["POST"])]
-    public function sendVerificationEmail(Request $request, SecurityService $securityService): Response
+    public function sendVerificationEmail(Request $_, SecurityService $securityService): Response
     {
         $securityService->sendVerificationEmail($this->getUser());
 
