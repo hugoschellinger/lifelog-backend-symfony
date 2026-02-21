@@ -56,15 +56,35 @@ Générer de nouvelle clé JWT avec la commande :
 
 **ATTENTION :** Si la commande ne fonctionne pas, vous devez télécharger [openssl](https://www.openssl.org/) et suivre [ce poste](https://stackoverflow.com/questions/66252709/error-system-libraryfopenno-such-process)(Prenez la réponse de `Zache Leto` et remplacer toutes les occurences de `app/var` par `config`)
 
-### Création des données mockées
+### Création d’un utilisateur
 
-Vous pouvez créer des données mockées avec la commande : 
+Pour créer un utilisateur avec l’email et le mot de passe de votre choix :
 
->php bin/console d:f:l --append
+> php bin/console app:user:create
 
-Par défaut, cette commande va créer un compte admin :
-* email : **admin@admin.fr**
-* mot de passe : **admin**
+La commande vous demandera **email** et **mot de passe** si vous ne les fournissez pas en options. Vous pouvez aussi les passer directement :
+
+> php bin/console app:user:create --email=admin@example.com --password=monMotDePasse
+
+**Options disponibles :**
+
+| Option       | Description                          |
+| ------------ | ------------------------------------ |
+| `--email`    | Email de l’utilisateur               |
+| `--password` | Mot de passe en clair                |
+| `--firstname`| Prénom (défaut : `User`)             |
+| `--lastname` | Nom                                  |
+| `--admin`    | Attribue le rôle `ROLE_ADMIN`        |
+
+**Exemple avec rôle admin :**
+
+> php bin/console app:user:create --email=admin@example.com --password=secret --admin
+
+### Données mockées (autres entités)
+
+Si le projet contient d’autres fixtures (entités autres qu’utilisateur), vous pouvez les charger avec :
+
+> php bin/console d:f:l --append
 
 ## Lancement du serveur
 
