@@ -15,7 +15,6 @@ class TestController extends AbstractController
     }
 
     #[Route('/test', name: 'test', methods: ["POST"])]
-    #[RateLimiter('test')]
     public function test(): Response
     {
         return $this->json("OK", 200);
