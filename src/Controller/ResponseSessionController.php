@@ -30,25 +30,9 @@ class ResponseSessionController extends AbstractController
         }
 
         $sessions = $questionnaire->getResponseSessions()->toArray();
-        
-        // Utiliser toujours la sérialisation manuelle pour garantir que answers_count est inclus
-        $data = array_map(fn(ResponseSession $session) => $this->serializeSession($session), $sessions);
-        return new JsonResponse($data, Response::HTTP_OK);
-    }
-    
-    private function serializeSession(ResponseSession $session): array
-    {
-        $answersCount = $session->getAnswers()->count();
-        
-        return [
-            'id' => $session->getId(),
-            'session_title' => $session->getSessionTitle(),
-            'session_date' => $session->getSessionDate()->format('c'),
-            'is_completed' => $session->isCompleted(),
-            'completion_date' => $session->getCompletionDate() ? $session->getCompletionDate()->format('c') : null,
-            'answers' => [], // Les réponses ne sont pas incluses pour éviter les références circulaires
-            'answers_count' => $answersCount, // Nombre de réponses
-        ];
+        // Sérialisation avec groupes pour inclure les answers (avec question_id) et answers_count
+        $data = $this->serializer->serialize($sessions, 'json', ['groups' => ['response_session:read']]);
+        return new JsonResponse(json_decode($data, true), Response::HTTP_OK);
     }
 
     #[Route('/{id}', name: 'get', methods: ['GET'])]

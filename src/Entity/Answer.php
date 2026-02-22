@@ -13,31 +13,31 @@ class Answer
     #[ORM\Id]
         #[ORM\GeneratedValue]
         #[ORM\Column(type: 'integer', unique: true)]
-    #[Groups(['answer:read', 'answer:write', 'question:read'])]
+    #[Groups(['answer:read', 'answer:write', 'question:read', 'response_session:read'])]
         private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
-    #[Groups(['answer:read', 'answer:write'])]
+    #[Groups(['answer:read', 'answer:write', 'response_session:read'])]
     private ?string $textValue = null;
 
     #[ORM\Column(type: 'float', nullable: true)]
-    #[Groups(['answer:read', 'answer:write'])]
+    #[Groups(['answer:read', 'answer:write', 'response_session:read'])]
     private ?float $numberValue = null;
 
     #[ORM\Column(type: 'datetime', nullable: true)]
-    #[Groups(['answer:read', 'answer:write'])]
+    #[Groups(['answer:read', 'answer:write', 'response_session:read'])]
     private ?\DateTimeInterface $dateValue = null;
 
     #[ORM\Column(type: 'boolean', nullable: true)]
-    #[Groups(['answer:read', 'answer:write'])]
+    #[Groups(['answer:read', 'answer:write', 'response_session:read'])]
     private ?bool $boolValue = null;
 
     #[ORM\Column(type: 'json')]
-    #[Groups(['answer:read', 'answer:write'])]
+    #[Groups(['answer:read', 'answer:write', 'response_session:read'])]
     private array $selectedOptions = [];
 
     #[ORM\Column(type: 'datetime')]
-    #[Groups(['answer:read', 'answer:write'])]
+    #[Groups(['answer:read', 'answer:write', 'response_session:read'])]
     private \DateTimeInterface $answeredAt;
 
     #[ORM\ManyToOne(targetEntity: Question::class, inversedBy: 'answers')]
@@ -140,6 +140,12 @@ class Answer
     public function getResponseSession(): ?ResponseSession
     {
         return $this->responseSession;
+    }
+
+    #[Groups(['response_session:read'])]
+    public function getQuestionId(): ?int
+    {
+        return $this->question?->getId();
     }
 
     public function setResponseSession(?ResponseSession $responseSession): self
