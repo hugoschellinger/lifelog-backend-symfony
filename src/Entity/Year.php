@@ -5,8 +5,8 @@ namespace App\Entity;
 use Doctrine\Common\Collections\ArrayCollection;
 use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation\Ignore;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'year')]
@@ -37,7 +37,7 @@ class Year
 
     #[ORM\OneToMany(targetEntity: Question::class, mappedBy: 'year', cascade: ['persist', 'remove'], orphanRemoval: true)]
     #[ORM\OrderBy(['order' => 'ASC'])]
-    #[Groups(['year:read'])]
+    #[Groups(['year:read'])] // pas dans question:read pour éviter Question → year → questions → Question
     private Collection $questions;
 
     public function __construct(int $value = null)

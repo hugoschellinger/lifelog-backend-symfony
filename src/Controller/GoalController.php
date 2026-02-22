@@ -31,15 +31,8 @@ class GoalController extends AbstractController
         }
 
         $goals = $globalObjective->getGoals()->toArray();
-        
-        try {
-            $data = $this->serializer->serialize($goals, 'json', ['groups' => ['goal:read']]);
-            return new JsonResponse(json_decode($data, true), Response::HTTP_OK);
-        } catch (\Exception $e) {
-            // Si la sérialisation échoue, créer manuellement le tableau
-            $data = array_map(fn(Goal $goal) => $this->serializeGoal($goal), $goals);
-            return new JsonResponse($data, Response::HTTP_OK);
-        }
+        $data = $this->serializer->serialize($goals, 'json', ['groups' => ['goal:read']]);
+        return new JsonResponse(json_decode($data, true), Response::HTTP_OK);
     }
 
     #[Route('/{id}', name: 'get', methods: ['GET'])]
@@ -49,14 +42,9 @@ class GoalController extends AbstractController
         if (!$goal) {
             return new JsonResponse(['error' => 'Goal not found'], Response::HTTP_NOT_FOUND);
         }
-        
-        try {
-            $data = $this->serializer->serialize($goal, 'json', ['groups' => ['goal:read']]);
-            return new JsonResponse(json_decode($data, true), Response::HTTP_OK);
-        } catch (\Exception $e) {
-            // Si la sérialisation échoue, créer manuellement le tableau
-            return new JsonResponse($this->serializeGoal($goal), Response::HTTP_OK);
-        }
+
+        $data = $this->serializer->serialize($goal, 'json', ['groups' => ['goal:read']]);
+        return new JsonResponse(json_decode($data, true), Response::HTTP_OK);
     }
 
     #[Route('/global-objective/{globalObjectiveId}', name: 'create', methods: ['POST'])]
@@ -108,13 +96,8 @@ class GoalController extends AbstractController
         $this->em->persist($goal);
         $this->em->flush();
 
-        try {
-            $responseData = $this->serializer->serialize($goal, 'json', ['groups' => ['goal:read']]);
-            return new JsonResponse(json_decode($responseData, true), Response::HTTP_CREATED);
-        } catch (\Exception $e) {
-            // Si la sérialisation échoue, créer manuellement le tableau
-            return new JsonResponse($this->serializeGoal($goal), Response::HTTP_CREATED);
-        }
+        $data = $this->serializer->serialize($goal, 'json', ['groups' => ['goal:read']]);
+        return new JsonResponse(json_decode($data, true), Response::HTTP_CREATED);
     }
 
     #[Route('/{id}', name: 'update', methods: ['PUT'])]
@@ -132,13 +115,8 @@ class GoalController extends AbstractController
         
         $this->em->flush();
 
-        try {
-            $responseData = $this->serializer->serialize($goal, 'json', ['groups' => ['goal:read']]);
-            return new JsonResponse(json_decode($responseData, true), Response::HTTP_OK);
-        } catch (\Exception $e) {
-            // Si la sérialisation échoue, créer manuellement le tableau
-            return new JsonResponse($this->serializeGoal($goal), Response::HTTP_OK);
-        }
+        $data = $this->serializer->serialize($goal, 'json', ['groups' => ['goal:read']]);
+        return new JsonResponse(json_decode($data, true), Response::HTTP_OK);
     }
 
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
@@ -155,32 +133,5 @@ class GoalController extends AbstractController
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
     }
 
-    private function serializeGoal(Goal $goal): array
-    {
-        $data = [
-            'id' => $goal->getId(),
-            'title' => $goal->getTitle(),
-            'goal_description' => $goal->getGoalDescription(),
-            'measure' => $goal->getMeasure(),
-            'measure_label' => $goal->getMeasureLabel(),
-            'target_date' => $goal->getTargetDate()->format('c'),
-            'type' => $goal->getType()->value,
-        ];
-        
-        // Ajouter les progressions
-        $progressions = [];
-        foreach ($goal->getProgressions() as $progression) {
-            $progressions[] = [
-                'id' => $progression->getId(),
-                'title' => $progression->getTitle(),
-                'progression_description' => $progression->getProgressionDescription(),
-                'measure' => $progression->getMeasure(),
-                'created_at' => $progression->getCreatedAt()->format('c'),
-            ];
-        }
-        $data['progressions'] = $progressions;
-        
-        return $data;
-    }
 }
 

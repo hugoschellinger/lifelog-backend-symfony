@@ -3,8 +3,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
-use Symfony\Component\Serializer\Annotation\Ignore;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'goal_retrospection')]
@@ -13,11 +13,11 @@ class GoalRetrospection
     #[ORM\Id]
     #[ORM\GeneratedValue]
     #[ORM\Column(type: 'integer', unique: true)]
-    #[Groups(['goal_retrospection:read', 'goal_retrospection:write'])]
+    #[Groups(['goal_retrospection:read', 'goal_retrospection:write', 'goal:read'])]
     private ?int $id = null;
 
     #[ORM\Column(type: 'text')]
-    #[Groups(['goal_retrospection:read', 'goal_retrospection:write'])]
+    #[Groups(['goal_retrospection:read', 'goal_retrospection:write', 'goal:read'])]
     private string $bilan;
 
     #[ORM\ManyToOne(targetEntity: Goal::class, inversedBy: 'goalRetrospections')]

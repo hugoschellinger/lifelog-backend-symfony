@@ -39,15 +39,8 @@ class QuestionController extends AbstractController
         }
 
         $questions = $year->getQuestions()->toArray();
-        
-        try {
-            $data = $this->serializer->serialize($questions, 'json', ['groups' => ['question:read']]);
-            return new JsonResponse(json_decode($data, true), Response::HTTP_OK);
-        } catch (\Exception $e) {
-            // Si la sérialisation échoue, créer manuellement le tableau
-            $data = array_map(fn(Question $question) => $this->serializeQuestion($question), $questions);
-            return new JsonResponse($data, Response::HTTP_OK);
-        }
+        $data = $this->serializer->serialize($questions, 'json', ['groups' => ['question:read']]);
+        return new JsonResponse(json_decode($data, true), Response::HTTP_OK);
     }
 
     #[Route('/{id}', name: 'get', methods: ['GET'])]
@@ -57,14 +50,9 @@ class QuestionController extends AbstractController
         if (!$question) {
             return new JsonResponse(['error' => 'Question not found'], Response::HTTP_NOT_FOUND);
         }
-        
-        try {
-            $data = $this->serializer->serialize($question, 'json', ['groups' => ['question:read']]);
-            return new JsonResponse(json_decode($data, true), Response::HTTP_OK);
-        } catch (\Exception $e) {
-            // Si la sérialisation échoue, créer manuellement le tableau
-            return new JsonResponse($this->serializeQuestion($question), Response::HTTP_OK);
-        }
+
+        $data = $this->serializer->serialize($question, 'json', ['groups' => ['question:read']]);
+        return new JsonResponse(json_decode($data, true), Response::HTTP_OK);
     }
 
     #[Route('/year/{yearValue}', name: 'create', methods: ['POST'])]
@@ -136,13 +124,8 @@ class QuestionController extends AbstractController
         $this->em->flush();
         $this->em->refresh($question);
 
-        try {
-            $responseData = $this->serializer->serialize($question, 'json', ['groups' => ['question:read']]);
-            return new JsonResponse(json_decode($responseData, true), Response::HTTP_CREATED);
-        } catch (\Exception $e) {
-            // Si la sérialisation échoue, créer manuellement le tableau
-            return new JsonResponse($this->serializeQuestion($question), Response::HTTP_CREATED);
-        }
+        $data = $this->serializer->serialize($question, 'json', ['groups' => ['question:read']]);
+        return new JsonResponse(json_decode($data, true), Response::HTTP_CREATED);
     }
 
     #[Route('/{id}', name: 'update', methods: ['PUT'])]
@@ -160,13 +143,8 @@ class QuestionController extends AbstractController
         
         $this->em->flush();
 
-        try {
-            $responseData = $this->serializer->serialize($question, 'json', ['groups' => ['question:read']]);
-            return new JsonResponse(json_decode($responseData, true), Response::HTTP_OK);
-        } catch (\Exception $e) {
-            // Si la sérialisation échoue, créer manuellement le tableau
-            return new JsonResponse($this->serializeQuestion($question), Response::HTTP_OK);
-        }
+        $data = $this->serializer->serialize($question, 'json', ['groups' => ['question:read']]);
+        return new JsonResponse(json_decode($data, true), Response::HTTP_OK);
     }
 
     #[Route('/{id}', name: 'delete', methods: ['DELETE'])]
@@ -181,31 +159,6 @@ class QuestionController extends AbstractController
         $this->em->flush();
 
         return new JsonResponse(null, Response::HTTP_NO_CONTENT);
-    }
-
-    /**
-     * Sérialise manuellement une question en tableau
-     */
-    private function serializeQuestion(Question $question): array
-    {
-        return [
-            'id' => $question->getId(),
-            'title' => $question->getTitle(),
-            'question_description' => $question->getQuestionDescription(),
-            'type' => $question->getType()->value,
-            'is_required' => $question->isRequired(),
-            'is_active' => $question->isActive(),
-            'order' => $question->getOrder(),
-            'options' => $question->getOptions(),
-            'min_value' => $question->getMinValue(),
-            'max_value' => $question->getMaxValue(),
-            'created_at' => $question->getCreatedAt()->format('c'),
-            'year' => $question->getYear() ? [
-                'id' => $question->getYear()->getId(),
-                'value' => $question->getYear()->getValue(),
-            ] : null,
-            'answers' => [],
-        ];
     }
 }
 

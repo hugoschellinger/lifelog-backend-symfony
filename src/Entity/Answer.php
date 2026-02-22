@@ -3,7 +3,8 @@
 namespace App\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
-use Symfony\Component\Serializer\Annotation\Groups;
+use Symfony\Component\Serializer\Attribute\Groups;
+use Symfony\Component\Serializer\Attribute\Ignore;
 
 #[ORM\Entity]
 #[ORM\Table(name: 'answer')]
@@ -41,7 +42,7 @@ class Answer
 
     #[ORM\ManyToOne(targetEntity: Question::class, inversedBy: 'answers')]
     #[ORM\JoinColumn(name: 'question_id', referencedColumnName: 'id')]
-    #[Groups(['answer:read'])]
+    #[Ignore]
     private ?Question $question = null;
 
     #[ORM\ManyToOne(targetEntity: ResponseSession::class, inversedBy: 'answers')]
