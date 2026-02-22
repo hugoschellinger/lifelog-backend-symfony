@@ -1,0 +1,36 @@
+{% extends "base.html.twig" %}
+
+{% block body %}
+	<div style="
+        width: 100%;
+            height: 100%;
+            display: flex;
+            border-radius: 10px;
+            background-color: #F2F5F5;
+            flex-flow: column nowrap;
+            align-items: center;">
+		<div style="
+            width: 100%;
+            height: 100px;
+            background-color: #666666;
+            text-align: center;
+            padding-top: 20px;
+            padding-bottom: 20px;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;">
+			<img src="{{DOMAIN}}/images/logo.png" style="width: 100px;
+                aspect-ratio: 1 / 1;" alt="logo"/>
+		</div>
+		<h1>
+			{% block title %}{% endblock %}
+		</h1>
+
+		<div style="text-align:center;">
+			{% block content %}{% endblock %}
+		</div>
+		<p></p>
+		<p>Cordialement,</p>
+		<p>L'équipe
+			{{APP_NAME}}.</p>
+	</div>
+{% endblock %}

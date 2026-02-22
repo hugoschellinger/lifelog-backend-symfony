@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
-#[Route('/api/global-objectives', name: 'api_global_objective_')]
+#[Route('/global-objectives', name: 'global_objective_')]
 class GlobalObjectiveController extends AbstractController
 {
     public function __construct(
@@ -43,43 +43,29 @@ class GlobalObjectiveController extends AbstractController
         if (!$year->getGlobalObjective()) {
             return new JsonResponse(null, Response::HTTP_OK);
         }
-        
-        try {
-            $data = $this->serializer->serialize($year->getGlobalObjective(), 'json', ['groups' => ['global_objective:read']]);
-            return new JsonResponse(json_decode($data, true), Response::HTTP_OK);
-        } catch (\Exception $e) {
-            // Si la sérialisation échoue, créer manuellement le tableau
-            $objective = $year->getGlobalObjective();
-            
-            // Sérialiser les goals manuellement
-            $goals = [];
-            foreach ($objective->getGoals() as $goal) {
-                try {
-                    $goalData = $this->serializer->serialize($goal, 'json', ['groups' => ['goal:read']]);
-                    $goals[] = json_decode($goalData, true);
-                } catch (\Exception $e) {
-                    // Si la sérialisation d'un goal échoue, créer manuellement
-                    $goals[] = [
-                        'id' => $goal->getId(),
-                        'title' => $goal->getTitle(),
-                        'goal_description' => $goal->getGoalDescription(),
-                        'measure' => $goal->getMeasure(),
-                        'measure_label' => $goal->getMeasureLabel(),
-                        'target_date' => $goal->getTargetDate()->format('c'),
-                        'type' => $goal->getType()->value,
-                    ];
-                }
-            }
-            
-            $data = [
-                'id' => $objective->getId(),
-                'title' => $objective->getTitle(),
-                'objective_description' => $objective->getObjectiveDescription(),
-                'type' => $objective->getType()->value,
-                'goals' => $goals,
+
+        $objective = $year->getGlobalObjective();
+        $goals = [];
+        foreach ($objective->getGoals() as $goal) {
+            $goals[] = [
+                'id' => $goal->getId(),
+                'title' => $goal->getTitle(),
+                'goal_description' => $goal->getGoalDescription(),
+                'measure' => $goal->getMeasure(),
+                'measure_label' => $goal->getMeasureLabel(),
+                'target_date' => $goal->getTargetDate()->format('c'),
+                'type' => $goal->getType()->value,
             ];
-            return new JsonResponse($data, Response::HTTP_OK);
         }
+
+        $data = [
+            'id' => $objective->getId(),
+            'title' => $objective->getTitle(),
+            'objective_description' => $objective->getObjectiveDescription(),
+            'type' => $objective->getType()->value,
+            'goals' => $goals,
+        ];
+        return new JsonResponse($data, Response::HTTP_OK);
     }
 
     #[Route('/year/{yearValue}', name: 'create', methods: ['POST'])]

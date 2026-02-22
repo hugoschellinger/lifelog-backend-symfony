@@ -1,5 +1,16 @@
 controllers:
+    prefix: "/api/{_locale}"
     resource:
         path: ../src/Controller/
         namespace: App\Controller
     type: attribute
+views:
+    prefix: "/app"
+    resource:
+        path: ../src/Controller/Views/
+        namespace: App\Controller\Views
+    type: attribute
+api_login_check:
+    path: /api/login_check
+api_refresh_token:
+    path: /api/token/refresh

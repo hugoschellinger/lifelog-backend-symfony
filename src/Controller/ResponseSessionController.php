@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
-#[Route('/api/response-sessions', name: 'api_response_session_')]
+#[Route('/response-sessions', name: 'response_session_')]
 class ResponseSessionController extends AbstractController
 {
     public function __construct(

@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
-#[Route('/api/years', name: 'api_year_')]
+#[Route('/years', name: 'year_')]
 class YearController extends AbstractController
 {
     public function __construct(

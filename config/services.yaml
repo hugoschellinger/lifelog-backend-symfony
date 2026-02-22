@@ -4,17 +4,50 @@
 # Put parameters here that don't need to change on each machine where the app is deployed
 # https://symfony.com/doc/current/best_practices.html#use-parameters-for-application-configuration
 parameters:
+    app.locales: en|fr
+    app.version: '%env(VERSION)%'
+    app.mobile_version: '%env(MOBILE_VERSION)%'
+    app.password_reset_limit: '%env(PASSWORD_RESET_LIMIT)%'
+    app.app_name: '%env(APP_NAME)%'
+    app.app_env: '%env(APP_ENV)%'
 
 services:
     # default configuration for services in *this* file
     _defaults:
         autowire: true      # Automatically injects dependencies in your services.
         autoconfigure: true # Automatically registers your services as commands, event subscribers, etc.
-
+    acme_api.event.authentication_success_listener:
+        class: App\EventListener\AuthenticationSuccessListener
+        tags:
+            - { name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_success, method: onAuthenticationSuccessResponse }
     # makes classes in src/ available to be used as services
     # this creates a service per class whose id is the fully-qualified class name
     App\:
         resource: '../src/'
+        exclude:
+            - '../src/DependencyInjection/'
+            - '../src/Entity/'
+            - '../src/Kernel.php'
+    App\EventSubscriber\ExceptionSubscriber:
+        tags: 
+            - {name: kernel.event_listener, event: kernel.exception}
+    # On request, check if the user has exceeded the rate limit
+    App\EventListener\RateLimiterListener:
+        arguments:
+            $apiLimiter: '@limiter.api'
+            $loginCheckLimiter: '@limiter.login_check'
+        tags:
+            - {name: kernel.event_listener, event: kernel.request, method: onKernelRequest}
+            - {name: kernel.event_listener, event: lexik_jwt_authentication.on_authentication_failure, method: onAuthenticationFailureResponse }
+    # Monolog processors — enrichissent chaque ligne de log pour Loki
+    Monolog\Processor\UidProcessor:
+        tags:
+            - { name: monolog.processor }
 
-    # add more service definitions when explicit configuration is needed
-    # please note that last definitions always *replace* previous ones
+    Symfony\Bridge\Monolog\Processor\WebProcessor:
+        tags:
+            - { name: monolog.processor }
+
+    App\Monolog\UserContextProcessor:
+        tags:
+            - { name: monolog.processor }

@@ -1,0 +1,14 @@
+{% extends "/emails/base.html.twig" %}
+
+{% block title %}Bienvenue sur {{APP_NAME}}
+{% endblock %}
+
+{% block content %}
+	<p>Bienvenue
+		{{user.firstname}}
+		{{user.lastname}},</p>
+	<p>Nous sommes heureux de vous compter parmis nous !</p>
+	<p>Votre compte a bien été crée. Veuillez entrez le code ci-dessous dans l'aplication pour valider votre adresse email :</p>
+	<p>{{user.verificationToken}}</p>
+	</a>
+{% endblock %}

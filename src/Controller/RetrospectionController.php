@@ -14,7 +14,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
-#[Route('/api/retrospections', name: 'api_retrospection_')]
+#[Route('/retrospections', name: 'retrospection_')]
 class RetrospectionController extends AbstractController
 {
     public function __construct(

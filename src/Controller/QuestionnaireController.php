@@ -12,7 +12,7 @@ use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Attribute\Route;
 use Symfony\Component\Serializer\SerializerInterface;
 
-#[Route('/api/questionnaires', name: 'api_questionnaire_')]
+#[Route('/questionnaires', name: 'questionnaire_')]
 class QuestionnaireController extends AbstractController
 {
     public function __construct(
