@@ -19,28 +19,37 @@ Pour commencer, installer toutes les dépendances dont l' api a besoin :
 
 ### Changement des variables d'environnement
 
-Il faut commencer par copier le fichier `.env.local.dist` et le coller en le renommant `.env.local`.
+Il faut commencer par copier le fichier `.env.local.dist` et le coller en le renommant `.env.local` :
+
+> cp .env.local.dist .env.local
 
 A l'intérieur de ce fichier, vous devez renseigner les variable demandé :
 
+APP_SECRET = `CODE_SECRET_DE_L'APPLICATION` <sub>(commande : `php bin/console app:genere-app-secret`)</sub>
 JWT_PASSPHRASE = `PASSPHRASE` <sub>(commande : `php bin/console app:genere-jwt-passphrase`)</sub>
 
 MAILER_DSN = `DSN_DU_MAILER`
+
+APP_ENV=dev
+DOMAIN="http://127.0.0.1:8000" # SANS LE / DE FIN
 
 Ensuite, modifier les variable du fichier `.env` :
 
 APP_NAME = `NOM_DE_L'APPLICATION`
 
-APP_SECRET = `CODE_SECRET_DE_L'APPLICATION` <sub>(commande : `php bin/console app:genere-app-secret`)</sub>
 ### Création des schémas
 
-Il faut ensuite créer la base de donnée pour importer tous les entités que contient le projet :
+Vous pouvez utiliser la configuration Docker pour lancer les bases de données :
+
+> docker compose up -d
+
+Il faut ensuite créer la base de donnée (elle se créer des fois en lançant le composer Docker) pour importer tous les entités que contient le projet :
 
 > php bin/console d:d:c
 
 Installer maintenant les entités :
 
-> php bin/console d:s:u -f --complete
+> php bin/console d:s:u -f
 
 ### Changement du logo
 
@@ -64,7 +73,7 @@ Pour créer un utilisateur avec l’email et le mot de passe de votre choix :
 
 La commande vous demandera **email** et **mot de passe** si vous ne les fournissez pas en options. Vous pouvez aussi les passer directement :
 
-> php bin/console app:user:create --email=admin@example.com --password=monMotDePasse
+> php bin/console app:user:create --email="admin@example.com" --password="monMotDePasse" --admin
 
 **Options disponibles :**
 
@@ -75,10 +84,6 @@ La commande vous demandera **email** et **mot de passe** si vous ne les fourniss
 | `--firstname`| Prénom (défaut : `User`)             |
 | `--lastname` | Nom                                  |
 | `--admin`    | Attribue le rôle `ROLE_ADMIN`        |
-
-**Exemple avec rôle admin :**
-
-> php bin/console app:user:create --email=admin@example.com --password=secret --admin
 
 ### Données mockées (autres entités)
 
