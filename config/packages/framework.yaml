@@ -1,8 +1,6 @@
 # see https://symfony.com/doc/current/reference/configuration/framework.html
 framework:
     secret: '%env(APP_SECRET)%'
-    serializer:
-        name_converter: serializer.name_converter.camel_case_to_snake_case
     #csrf_protection: true
     http_method_override: false
     handle_all_throwables: true
