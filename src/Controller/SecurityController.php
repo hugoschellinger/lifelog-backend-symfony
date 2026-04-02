@@ -5,7 +5,10 @@ namespace App\Controller;
 use App\Entity\User;
 use App\Service\UserService;
 use App\Service\SecurityService;
+use Gesdinet\JWTRefreshTokenBundle\Generator\RefreshTokenGeneratorInterface;
+use Gesdinet\JWTRefreshTokenBundle\Model\RefreshTokenManagerInterface;
 use Lexik\Bundle\JWTAuthenticationBundle\Services\JWTTokenManagerInterface;
+use Symfony\Component\DependencyInjection\Attribute\Autowire;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Exception\BadRequestException;
 use Symfony\Component\HttpFoundation\Request;
@@ -25,6 +28,9 @@ class SecurityController extends AbstractController
     private NormalizerInterface $normalizer;
     private JWTTokenManagerInterface $jwtManager;
     private UserPasswordHasherInterface $passwordHasher;
+    private RefreshTokenGeneratorInterface $refreshTokenGenerator;
+    private RefreshTokenManagerInterface $refreshTokenManager;
+    private int $refreshTokenTtl;
 
     public function __construct(
         UserService $userService,
@@ -32,15 +38,21 @@ class SecurityController extends AbstractController
         SecurityService $securityService,
         NormalizerInterface $normalizer,
         JWTTokenManagerInterface $jwtManager,
-        UserPasswordHasherInterface $passwordHasher
-    )
-    {
+        UserPasswordHasherInterface $passwordHasher,
+        RefreshTokenGeneratorInterface $refreshTokenGenerator,
+        RefreshTokenManagerInterface $refreshTokenManager,
+        #[Autowire('%gesdinet_jwt_refresh_token.ttl%')]
+        int $refreshTokenTtl
+    ) {
         $this->userService = $userService;
         $this->translator = $translator;
         $this->securityService = $securityService;
         $this->normalizer = $normalizer;
         $this->jwtManager = $jwtManager;
         $this->passwordHasher = $passwordHasher;
+        $this->refreshTokenGenerator = $refreshTokenGenerator;
+        $this->refreshTokenManager = $refreshTokenManager;
+        $this->refreshTokenTtl = $refreshTokenTtl;
     }
 
     #[Route('/test', name: 'test', methods: ["POST"])]
@@ -73,9 +85,14 @@ class SecurityController extends AbstractController
 
         $token = $this->jwtManager->create($user);
 
+        $refreshToken = $this->refreshTokenGenerator->createForUserWithTtl($user, $this->refreshTokenTtl);
+        $this->refreshTokenManager->save($refreshToken);
+
         return $this->json([
             'user' => $user->getUserIdentifier(),
             'token' => $token,
+            'refreshToken' => $refreshToken->getRefreshToken(),
+            'refresh_token_expiration' => $refreshToken->getValid()->getTimestamp(),
         ]);
     }
 
