@@ -35,15 +35,14 @@ security:
     # Easy way to control access for large sections of your site
     # Note: Only the *first* access control that matches will be used
     access_control:
-        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
-        - { path: ^/api/(%app.locales%)/token/refresh, roles: PUBLIC_ACCESS }
+        - { path: ^/api/token/refresh, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%app.locales%)/user/verification, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%app.locales%)/resetPassword, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%app.locales%)/version, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%app.locales%)/checkEmail, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%app.locales%)/login, roles: PUBLIC_ACCESS }
         - { path: ^/api/(%app.locales%)/register, roles: PUBLIC_ACCESS }
-        - { path: ^/api/(%app.locales%), roles: IS_AUTHENTICATED_FULLY }
+        - { path: ^/api, roles: IS_AUTHENTICATED_FULLY }
 
 when@test:
     security:
