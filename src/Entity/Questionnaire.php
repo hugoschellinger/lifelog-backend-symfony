@@ -117,14 +117,29 @@ class Questionnaire
 
     /**
      * @return Collection<int, Question>
-     * Méthode virtuelle qui récupère les questions via Year
+     * Récupère les questions de l'année (hors persistantes).
      */
-    public function getQuestions(): Collection
+    public function getYearQuestions(): Collection
     {
         if ($this->year) {
             return $this->year->getQuestions();
         }
         return new ArrayCollection();
+    }
+
+    /**
+     * @param Question[] $persistentQuestions
+     * @return Collection<int, Question>
+     * Fusionne les questions de l'année + les questions persistantes actives (non archivées).
+     */
+    public function getQuestions(array $persistentQuestions = []): Collection
+    {
+        $yearQuestions = $this->getYearQuestions()->toArray();
+        $activePersistent = array_filter(
+            $persistentQuestions,
+            fn(Question $q) => $q->isActive() && !$q->isArchived()
+        );
+        return new ArrayCollection(array_merge($yearQuestions, $activePersistent));
     }
 
     public function addQuestion(Question $question): self

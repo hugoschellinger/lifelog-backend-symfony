@@ -12,10 +12,10 @@ use Symfony\Component\Serializer\Attribute\Groups;
 class Question
 {
     #[ORM\Id]
-        #[ORM\GeneratedValue]
-        #[ORM\Column(type: 'integer', unique: true)]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer', unique: true)]
     #[Groups(['question:read', 'question:write', 'answer:read'])]
-        private ?int $id = null;
+    private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255)]
     #[Groups(['question:read', 'question:write', 'answer:read'])]
@@ -53,12 +53,20 @@ class Question
     #[Groups(['question:read', 'question:write', 'answer:read'])]
     private ?float $maxValue = null;
 
+    #[ORM\Column(type: 'boolean')]
+    #[Groups(['question:read', 'question:write', 'answer:read'])]
+    private bool $isPersistent = false;
+
+    #[ORM\Column(type: 'boolean')]
+    #[Groups(['question:read', 'question:write', 'answer:read'])]
+    private bool $isArchived = false;
+
     #[ORM\Column(type: 'datetime')]
     #[Groups(['question:read', 'question:write', 'answer:read'])]
     private \DateTimeInterface $createdAt;
 
     #[ORM\ManyToOne(targetEntity: Year::class, inversedBy: 'questions')]
-    #[ORM\JoinColumn(name: 'year_id', referencedColumnName: 'id')]
+    #[ORM\JoinColumn(name: 'year_id', referencedColumnName: 'id', nullable: true)]
     #[Groups(['question:read'])]
     private ?Year $year = null;
 
@@ -173,6 +181,28 @@ class Question
     public function setMaxValue(?float $maxValue): self
     {
         $this->maxValue = $maxValue;
+        return $this;
+    }
+
+    public function isPersistent(): bool
+    {
+        return $this->isPersistent;
+    }
+
+    public function setIsPersistent(bool $isPersistent): self
+    {
+        $this->isPersistent = $isPersistent;
+        return $this;
+    }
+
+    public function isArchived(): bool
+    {
+        return $this->isArchived;
+    }
+
+    public function setIsArchived(bool $isArchived): self
+    {
+        $this->isArchived = $isArchived;
         return $this;
     }
 

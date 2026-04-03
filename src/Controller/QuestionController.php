@@ -136,6 +136,13 @@ class QuestionController extends AbstractController
             return new JsonResponse(['error' => 'Question not found'], Response::HTTP_NOT_FOUND);
         }
 
+        if ($question->isPersistent()) {
+            return new JsonResponse(
+                ['error' => 'Use /persistent-questions/{id} to update persistent questions'],
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
+        }
+
         $this->serializer->deserialize($request->getContent(), Question::class, 'json', [
             'groups' => ['question:write'],
             'object_to_populate' => $question
@@ -153,6 +160,13 @@ class QuestionController extends AbstractController
         $question = $this->em->getRepository(Question::class)->find($id);
         if (!$question) {
             return new JsonResponse(['error' => 'Question not found'], Response::HTTP_NOT_FOUND);
+        }
+
+        if ($question->isPersistent()) {
+            return new JsonResponse(
+                ['error' => 'Persistent questions cannot be deleted, use archive instead'],
+                Response::HTTP_UNPROCESSABLE_ENTITY
+            );
         }
 
         $this->em->remove($question);

@@ -145,9 +145,17 @@ class ResponseSession
         return $this;
     }
 
-    public function getCompletionPercentage(): float
+    /**
+     * @param Question[] $persistentQuestions Active persistent questions to include in the total.
+     */
+    public function getCompletionPercentage(array $persistentQuestions = []): float
     {
-        if (!$this->questionnaire || $this->questionnaire->getQuestions()->isEmpty()) {
+        if (!$this->questionnaire) {
+            return 0;
+        }
+
+        $allQuestions = $this->questionnaire->getQuestions($persistentQuestions);
+        if ($allQuestions->isEmpty()) {
             return 0;
         }
 
@@ -158,7 +166,7 @@ class ResponseSession
             }
         }
 
-        return (count($answeredQuestionIds) / $this->questionnaire->getQuestions()->count()) * 100;
+        return (count($answeredQuestionIds) / $allQuestions->count()) * 100;
     }
 
     public function getAnsweredQuestionsCount(): int

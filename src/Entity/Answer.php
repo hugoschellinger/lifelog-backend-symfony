@@ -11,10 +11,10 @@ use Symfony\Component\Serializer\Attribute\Ignore;
 class Answer
 {
     #[ORM\Id]
-        #[ORM\GeneratedValue]
-        #[ORM\Column(type: 'integer', unique: true)]
+    #[ORM\GeneratedValue]
+    #[ORM\Column(type: 'integer', unique: true)]
     #[Groups(['answer:read', 'answer:write', 'question:read', 'response_session:read'])]
-        private ?int $id = null;
+    private ?int $id = null;
 
     #[ORM\Column(type: 'string', length: 255, nullable: true)]
     #[Groups(['answer:read', 'answer:write', 'response_session:read'])]

@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Entity\Question;
 use App\Entity\Questionnaire;
 use App\Entity\Year;
 use Doctrine\ORM\EntityManagerInterface;
@@ -45,11 +46,14 @@ class QuestionnaireController extends AbstractController
         }
         
         $questionnaire = $year->getQuestionnaire();
-        
-        // Construire manuellement le tableau pour éviter de charger la collection incorrecte
-        // Utiliser les questions de Year au lieu de Questionnaire car la relation est incorrecte
+
+        $persistentQuestions = $this->em->getRepository(Question::class)
+            ->findBy(['isPersistent' => true, 'isArchived' => false, 'isActive' => true]);
+
+        $allQuestions = $questionnaire->getQuestions($persistentQuestions);
+
         $questions = [];
-        foreach ($year->getQuestions() as $question) {
+        foreach ($allQuestions as $question) {
             try {
                 $questionData = $this->serializer->serialize($question, 'json', ['groups' => ['question:read']]);
                 $questions[] = json_decode($questionData, true);
